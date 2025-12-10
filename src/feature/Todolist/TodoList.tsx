@@ -4,6 +4,9 @@ import {apiTodo} from "../api/api.ts";
 
 export const TodoList = () => {
 
+    //ошибка валидации
+    const [inputError, setInputError] = useState<string>('')
+
     // Фильтрация 'all' | 'completed' | 'active'
     const [filter, setFilter] = useState<filterType>('all')
 
@@ -51,7 +54,24 @@ export const TodoList = () => {
 
     // Обработка добавления задачи
     const handleOnClickAdd = async () => {
-        if(!valueInInput.trim()) return
+
+        setInputError('')
+        if(!valueInInput.trim()) {
+            setInputError('Введите название задачи')
+            return
+        }
+
+        if (valueInInput.trim().length <= 2) {
+            setInputError('Минимум 2 символа')
+            return
+        }
+
+        if(valueInInput.trim().length > 64) {
+            setInputError('Максимум 64 символа')
+            return
+        }
+
+
         try {
             await apiTodo.addTodos(valueInInput)
             await fetchTodos()
@@ -71,12 +91,22 @@ export const TodoList = () => {
             setIsEditingId(null)
             return
         }
+
+        if (editText.trim().length <= 2) {
+            setIsEditingId(null)
+            return
+        }
+        if(editText.trim().length > 64) {
+            setIsEditingId(null)
+            return
+        }
+
         try {
             //Ищем нужный туду
-            const todoUpdate = await apiTodo.saveTodos(id, {title: editText.trim()})
+            await apiTodo.saveTodos(id, {title: editText.trim()})
 
             // Обновить локальное состояние
-            setTodos(prev => prev.map(todo => todo.id == id ? {...todo, todoUpdate} : todo))
+            setTodos(prev => prev.map(todo => todo.id === id ? {...todo, title: editText.trim()} : todo))
 
             // Сбросить состояние редактирования
             setIsEditingId(null)
@@ -148,7 +178,6 @@ export const TodoList = () => {
 
     return (
         <div className={'app-container'}>
-            <h1>Список задач</h1>
             <div className={'container'}>
                 <input
                     type="text"
@@ -168,11 +197,12 @@ export const TodoList = () => {
                 >Добавить
                 </button>
             </div>
+            {inputError && (<div className={'span-err'}>{inputError}</div>)}
 
             <div className={'container'}>
-                <button className={'btn-aac'} onClick={() => setFilter('all')}>Все({countAll})</button>
-                <button className={'btn-aac'} onClick={() => setFilter('active')}>В работе({countActive})</button>
-                <button className={'btn-aac'} onClick={() => setFilter('completed')}>Сделано({countCompleted})</button>
+                <button className={`btn-aac ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>Все({countAll})</button>
+                <button className={`btn-aac ${filter === 'active' ? 'active' : ''}`} onClick={() => setFilter('active')}>В работе({countActive})</button>
+                <button className={`btn-aac ${filter === 'completed' ? 'active' : ''}`} onClick={() => setFilter('completed')}>Сделано({countCompleted})</button>
             </div>
 
             {loading ? (<div>Loading...</div>) :(<div className={'todos-container'}>

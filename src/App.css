@@ -8,6 +8,7 @@
     align-items: center;
     margin: 40px;
     border-radius: 10px;
+    padding: 40px;
 
 }
 .container {
@@ -125,3 +126,13 @@
     background-color: #00b6bc;
 }
 
+.btn-aac.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.span-err {
+    color: red;
+    margin-top: 10px;
+}
