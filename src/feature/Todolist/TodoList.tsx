@@ -1,5 +1,5 @@
 import {type ChangeEvent, useEffect, useState} from "react";
-import type {filterType, Todo} from "../type";
+import type {filterType, Todo, TodoInfo} from "../type";
 import {apiTodo} from "../api/api.ts";
 
 export const TodoList = () => {
@@ -16,6 +16,13 @@ export const TodoList = () => {
     // Массив задач
     const [todos, setTodos] = useState<Todo[]>([])
     const [loading, setLoading] = useState<boolean>(false)
+
+    // Массив каунтеров
+    const [count, setCount] = useState<TodoInfo>({
+        all: 0,
+        completed: 0,
+        inWork: 0,
+    })
 
     // Состояние для редактирования задач
     const [isEditingId, setIsEditingId] = useState<number | null>(null)
@@ -35,6 +42,9 @@ export const TodoList = () => {
                 setTodos(dataTodos.data.reverse())
                 console.log(`Список задач: ${dataTodos.data.length}`)
             }
+            if(dataTodos && dataTodos.info){
+                setCount(dataTodos.info)
+            }
 
         } catch (error) {
             console.log(`Ошибка загрузки задач: ${error}`)
@@ -43,7 +53,6 @@ export const TodoList = () => {
             setLoading(false)
         }
     }
-
     //Вывод задач после перезагрузки страницы
     useEffect(() => {
         const loadTodos = async () =>{
@@ -151,30 +160,12 @@ export const TodoList = () => {
 
             // Изменение статуса локально
             setTodos(prev => prev.map(todo => todo.id === id ? {...todo, isDone: data.isDone} : todo))
+            await fetchTodos()
 
         } catch (error) {
             console.error(error)
         }
     }
-
-    // Получить отфильтрованный список задач
-    const getFilteredTodos = (): Todo[] => {
-        switch (filter) {
-            case 'active':
-                return todos.filter(todo => !todo.isDone);
-            case 'completed':
-                return todos.filter(todo => todo.isDone);
-            case 'all':
-                return todos
-            default:
-                return todos
-        }
-    }
-    const filteredTodos = getFilteredTodos()
-
-    const countAll = todos.length
-    const countActive = todos.filter(todo => !todo.isDone).length
-    const countCompleted = todos.filter(todo => todo.isDone).length
 
     return (
         <div className={'app-container'}>
@@ -200,13 +191,13 @@ export const TodoList = () => {
             {inputError && (<div className={'span-err'}>{inputError}</div>)}
 
             <div className={'container'}>
-                <button className={`btn-aac ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>Все({countAll})</button>
-                <button className={`btn-aac ${filter === 'active' ? 'active' : ''}`} onClick={() => setFilter('active')}>В работе({countActive})</button>
-                <button className={`btn-aac ${filter === 'completed' ? 'active' : ''}`} onClick={() => setFilter('completed')}>Сделано({countCompleted})</button>
+                <button className={`btn-aac ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>Все({count.all})</button>
+                <button className={`btn-aac ${filter === 'active' ? 'active' : ''}`} onClick={() => setFilter('active')}>В работе({count.inWork})</button>
+                <button className={`btn-aac ${filter === 'completed' ? 'active' : ''}`} onClick={() => setFilter('completed')}>Сделано({count.completed})</button>
             </div>
 
             {loading ? (<div>Loading...</div>) :(<div className={'todos-container'}>
-                {filteredTodos.length > 0 ? (filteredTodos.map(todo => (
+                {todos.length > 0 ? (todos.map(todo => (
                     <div key={todo.id} className={'todo'}>
                         <div className={'item'}>
                             <input
@@ -214,7 +205,6 @@ export const TodoList = () => {
                                 checked={todo.isDone}
                                 onChange={() => handleToggle(todo.id)}
                             />
-
                             {isEditingId === todo.id ? (
                                 <div className={'item-btn'}>
                                     <input
@@ -244,9 +234,7 @@ export const TodoList = () => {
                             <button className={'btn-delete'} onClick={()=> handleOnClickDelete(todo.id)}>
                                 <img className={'btn-img'} src="https://img.icons8.com/?size=100&id=67884&format=png&color=FFFFFF" alt="icon"/>
                             </button>
-
                         </div>
-
                     </div>
                 ))) : (<div>
                     <p>Список задач пуст</p>

@@ -5,4 +5,10 @@ export interface Todo {
     isDone: boolean;
 }
 
+export interface TodoInfo {
+    all: number
+    completed: number
+    inWork: number
+}
+
 export type filterType = 'all' | 'completed' | 'active';
