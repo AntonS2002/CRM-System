@@ -1,5 +1,5 @@
 import './App.css'
-import {TodoList} from "./feature/Todolist/TodoList.tsx";
+import {TodoList} from "./pages/TodoList.tsx";
 
 
 

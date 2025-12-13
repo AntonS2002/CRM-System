@@ -1,96 +1,20 @@
-import {type ChangeEvent, useEffect, useState} from "react";
-import type {filterType, Todo, TodoInfo} from "../type";
+import {useState} from "react";
 import {apiTodo} from "../api/api.ts";
+import type {filterType, Todo} from "../type";
 
-export const TodoList = () => {
+interface TasksListProps {
+    loading: boolean;
+    todos: Todo[];
+    setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+    fetchTodos: (status: filterType) => void;
+    filter: filterType;
+}
 
-    //ошибка валидации
-    const [inputError, setInputError] = useState<string>('')
-
-    // Фильтрация 'all' | 'completed' | 'active'
-    const [filter, setFilter] = useState<filterType>('all')
-
-    // Значение в текстовом поле
-    const [valueInInput, setValueInInput] = useState<string>('')
-
-    // Массив задач
-    const [todos, setTodos] = useState<Todo[]>([])
-    const [loading, setLoading] = useState<boolean>(false)
-
-    // Массив каунтеров
-    const [count, setCount] = useState<TodoInfo>({
-        all: 0,
-        completed: 0,
-        inWork: 0,
-    })
+export const TasksList = ({loading, todos, setTodos, fetchTodos, filter}: TasksListProps) => {
 
     // Состояние для редактирования задач
     const [isEditingId, setIsEditingId] = useState<number | null>(null)
     const [editText, setEditText] = useState<string>('')
-
-    // Обработка изменения в input
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setValueInInput(e.target.value)
-    }
-
-    //Просмотр списка задач
-    const fetchTodos = async(status?: filterType) => {
-        setLoading(true)
-        try {
-            const dataTodos = await apiTodo.getTodos(status)
-            if(Array.isArray(dataTodos.data)){
-                setTodos(dataTodos.data.reverse())
-                console.log(`Список задач: ${dataTodos.data.length}`)
-            }
-            if(dataTodos && dataTodos.info){
-                setCount(dataTodos.info)
-            }
-
-        } catch (error) {
-            console.log(`Ошибка загрузки задач: ${error}`)
-            setTodos([])
-        } finally {
-            setLoading(false)
-        }
-    }
-    //Вывод задач после перезагрузки страницы
-    useEffect(() => {
-        const loadTodos = async () =>{
-            await fetchTodos()
-        }
-        loadTodos()
-    }, [filter]);
-
-    // Обработка добавления задачи
-    const handleOnClickAdd = async () => {
-
-        setInputError('')
-        if(!valueInInput.trim()) {
-            setInputError('Введите название задачи')
-            return
-        }
-
-        if (valueInInput.trim().length <= 2) {
-            setInputError('Минимум 2 символа')
-            return
-        }
-
-        if(valueInInput.trim().length > 64) {
-            setInputError('Максимум 64 символа')
-            return
-        }
-
-
-        try {
-            await apiTodo.addTodos(valueInInput)
-            await fetchTodos()
-            setValueInInput('')
-        } catch (error) {
-            console.error('Ошибка добавления задачи', error)
-        }
-
-
-    }
 
     // Обработка сохранения изменений задачи
     const handleSaveEdit = async (id: number) => {
@@ -160,42 +84,15 @@ export const TodoList = () => {
 
             // Изменение статуса локально
             setTodos(prev => prev.map(todo => todo.id === id ? {...todo, isDone: data.isDone} : todo))
-            await fetchTodos()
+            await fetchTodos(filter)
 
         } catch (error) {
             console.error(error)
         }
     }
 
-    return (
-        <div className={'app-container'}>
-            <div className={'container'}>
-                <input
-                    type="text"
-                    placeholder="Введите название задачи..."
-                    onChange={handleChange}
-                    value={valueInInput}
-                    className={'inp'}
-                    onKeyPress={(e) => {
-                        if(e.key === 'Enter'){
-                            handleOnClickAdd()
-                        }}
-                    }
-                />
-                <button
-                    onClick={handleOnClickAdd}
-                    className={'btn'}
-                >Добавить
-                </button>
-            </div>
-            {inputError && (<div className={'span-err'}>{inputError}</div>)}
-
-            <div className={'container'}>
-                <button className={`btn-aac ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>Все({count.all})</button>
-                <button className={`btn-aac ${filter === 'active' ? 'active' : ''}`} onClick={() => setFilter('active')}>В работе({count.inWork})</button>
-                <button className={`btn-aac ${filter === 'completed' ? 'active' : ''}`} onClick={() => setFilter('completed')}>Сделано({count.completed})</button>
-            </div>
-
+    return(
+        <div>
             {loading ? (<div>Loading...</div>) :(<div className={'todos-container'}>
                 {todos.length > 0 ? (todos.map(todo => (
                     <div key={todo.id} className={'todo'}>

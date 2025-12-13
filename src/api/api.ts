@@ -3,7 +3,7 @@ import type {filterType, Todo} from "../type";
 export const apiTodo = {
 
     // получить список задач
-    async getTodos(status?: filterType) {
+    async getTodos(status: filterType) {
         const response = await fetch(`https://easydev.club/api/v1/todos?filter=${status}`, {
             method: 'GET',
             headers: {

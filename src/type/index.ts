@@ -11,4 +11,4 @@ export interface TodoInfo {
     inWork: number
 }
 
-export type filterType = 'all' | 'completed' | 'active';
+export type filterType = 'all' | 'completed' | 'inWork';
