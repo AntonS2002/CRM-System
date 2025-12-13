@@ -1,11 +1,8 @@
 import {type ChangeEvent, useState} from "react";
 import {apiTodo} from "../api/api.ts";
-import type {filterType} from "../type";
+import type {AddTaskProps} from "../type";
 
-interface AddTaskProps {
-    fetchTodos: (status: filterType) => void;
-    filter: filterType;
-}
+
 
 export const AddTask = ({fetchTodos, filter}: AddTaskProps) => {
     //ошибка валидации
@@ -31,9 +28,8 @@ export const AddTask = ({fetchTodos, filter}: AddTaskProps) => {
             return
         }
 
-
         try {
-            await apiTodo.addTodos(valueInInput)
+            await apiTodo.addTodos({title: valueInInput, isDone: false})
             await fetchTodos(filter)
             setValueInInput('')
         } catch (error) {

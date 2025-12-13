@@ -1,9 +1,9 @@
-import type {filterType, Todo} from "../type";
+import type {filterType, MetaResponse, Todo, TodoInfo, TodoRequest} from "../type";
 
 export const apiTodo = {
 
     // получить список задач
-    async getTodos(status: filterType) {
+    async getTodos(status: filterType): Promise<MetaResponse<Todo, TodoInfo>> {
         const response = await fetch(`https://easydev.club/api/v1/todos?filter=${status}`, {
             method: 'GET',
             headers: {
@@ -17,16 +17,13 @@ export const apiTodo = {
     },
 
     // добавить задачу
-    async addTodos(title: string) {
+    async addTodos(todo: TodoRequest) {
         const response = await fetch(`https://easydev.club/api/v1/todos`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                title,
-                isDone: false
-            })
+            body: JSON.stringify(todo)
         })
         if(!response.ok){
             throw new Error(`Failed app todo: ${response.status}`)
@@ -62,17 +59,13 @@ export const apiTodo = {
     },
 
     // изменение статуса задачи
-    async toggleTodos(id: number, todoUpdate: Partial<Todo>) {
+    async toggleTodos(id: number, todo: TodoRequest) {
         const response = await fetch(`https://easydev.club/api/v1/todos/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
             },
-            body: JSON.stringify({
-                ...todoUpdate,
-                isDone: !todoUpdate.isDone
-            })
+            body: JSON.stringify(todo)
         })
 
         if(!response.ok){

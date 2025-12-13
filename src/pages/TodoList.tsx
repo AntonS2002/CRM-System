@@ -20,7 +20,7 @@ export const TodoList = () => {
     const [filter, setFilter] = useState<filterType>('all')
 
     //Просмотр списка задач
-    const fetchTodos = async(status: filterType) => {
+    const fetchTodos = async(status: filterType): Promise<void> => {
         setLoading(true)
         try {
             const dataTodos = await apiTodo.getTodos(status)

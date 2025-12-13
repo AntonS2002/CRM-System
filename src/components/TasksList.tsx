@@ -1,14 +1,7 @@
 import {useState} from "react";
 import {apiTodo} from "../api/api.ts";
-import type {filterType, Todo} from "../type";
+import type {TasksListProps, TodoRequest} from "../type";
 
-interface TasksListProps {
-    loading: boolean;
-    todos: Todo[];
-    setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-    fetchTodos: (status: filterType) => void;
-    filter: filterType;
-}
 
 export const TasksList = ({loading, todos, setTodos, fetchTodos, filter}: TasksListProps) => {
 
@@ -80,7 +73,12 @@ export const TasksList = ({loading, todos, setTodos, fetchTodos, filter}: TasksL
             const todoUpdate = todos.find(todo => todo.id === id)
             if(!todoUpdate)return
 
-            const data =  await apiTodo.toggleTodos(id, todoUpdate)
+            // Создаем todoRequest с измененным статусом
+            const todoRequest: TodoRequest = {
+                isDone: !todoUpdate.isDone
+            }
+            // передаем данные и id
+            const data =  await apiTodo.toggleTodos(id, todoRequest)
 
             // Изменение статуса локально
             setTodos(prev => prev.map(todo => todo.id === id ? {...todo, isDone: data.isDone} : todo))

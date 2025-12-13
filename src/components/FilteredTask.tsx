@@ -1,10 +1,6 @@
-import type {filterType, TodoInfo} from "../type";
+import type {FilteredTaskProps} from "../type";
 
-interface FilteredTaskProps {
-    filter: filterType;
-    setFilter: React.Dispatch<React.SetStateAction<filterType>>;
-    count: TodoInfo;
-}
+
 
 export const FilteredTasks = ({filter, setFilter, count}: FilteredTaskProps) => {
 
