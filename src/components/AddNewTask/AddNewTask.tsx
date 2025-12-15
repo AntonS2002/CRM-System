@@ -1,14 +1,17 @@
 import {type ChangeEvent, useState} from "react";
-import {apiTodo} from "../api/api.ts";
-import type {AddTaskProps} from "../type";
+import type {FilterType} from "../../type";
+import {addTodos} from "../../api/api.ts";
 
+export interface AddTaskProps {
+    fetchTodos: (status: FilterType) => void;
+    filter: FilterType;
+}
 
-
-export const AddTask = ({fetchTodos, filter}: AddTaskProps) => {
+export const AddNewTask = ({fetchTodos, filter}: AddTaskProps) => {
     //ошибка валидации
     const [inputError, setInputError] = useState<string>('')
 
-// Значение в текстовом поле
+    // Значение в текстовом поле
     const [valueInInput, setValueInInput] = useState<string>('')
 
     const handleOnClickAdd = async () => {
@@ -29,7 +32,7 @@ export const AddTask = ({fetchTodos, filter}: AddTaskProps) => {
         }
 
         try {
-            await apiTodo.addTodos({title: valueInInput, isDone: false})
+            await addTodos({title: valueInInput, isDone: false})
             await fetchTodos(filter)
             setValueInInput('')
         } catch (error) {

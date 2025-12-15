@@ -23,23 +23,9 @@ export interface MetaResponse<T, N> {
         totalAmount: number
     }
 }
-export type filterType = 'all' | 'completed' | 'inWork';
+export type FilterType = 'all' | 'completed' | 'inWork';
 
-export interface TasksListProps {
-    loading: boolean;
-    todos: Todo[];
-    setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-    fetchTodos: (status: filterType) => void;
-    filter: filterType;
-}
 
-export interface AddTaskProps {
-    fetchTodos: (status: filterType) => void;
-    filter: filterType;
-}
 
-export interface FilteredTaskProps {
-    filter: filterType;
-    setFilter: React.Dispatch<React.SetStateAction<filterType>>;
-    count: TodoInfo;
-}
+
+

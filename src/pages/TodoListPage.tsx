@@ -1,11 +1,11 @@
 import {useEffect, useState} from "react";
-import type {filterType, Todo, TodoInfo} from "../type";
-import {apiTodo} from "../api/api.ts";
+import type {FilterType, Todo, TodoInfo} from "../type";
 import {TasksList} from "../components/TasksList.tsx";
-import {FilteredTasks} from "../components/FilteredTask.tsx";
-import {AddTask} from "../components/AddTask.tsx";
+import {FilteredTasks} from "../components/TasksFilter/TasksFilter.tsx";
+import {AddNewTask} from "../components/AddNewTask/AddNewTask.tsx";
+import {getTodos} from "../api/api.ts";
 
-export const TodoList = () => {
+export const TodoListPage = () => {
 
     const [count, setCount] = useState<TodoInfo>({
         all: 0,
@@ -17,42 +17,38 @@ export const TodoList = () => {
 
     const [loading, setLoading] = useState<boolean>(false)
 
-    const [filter, setFilter] = useState<filterType>('all')
+    const [filter, setFilter] = useState<FilterType>('all')
 
     //Просмотр списка задач
-    const fetchTodos = async(status: filterType): Promise<void> => {
+    const fetchTodos = async(status: FilterType): Promise<void> => {
         setLoading(true)
         try {
-            const dataTodos = await apiTodo.getTodos(status)
-            if(Array.isArray(dataTodos.data)){
-                setTodos(dataTodos.data.reverse())
+            const dataTodos = await getTodos(status)
+
+                setTodos(dataTodos.data)
                 console.log(`Список задач: ${dataTodos.data.length}`)
-            }
-            if(dataTodos && dataTodos.info){
-                setCount(dataTodos.info)
-            }
+
+                if(dataTodos.info) {
+                    setCount(dataTodos.info)
+                }
 
         } catch (error) {
             console.log(`Ошибка загрузки задач: ${error}`)
-            setTodos([])
+            alert('Ошибка загрузки')
         } finally {
             setLoading(false)
         }
     }
 
-
     //Вывод задач после перезагрузки страницы
     useEffect(() => {
-        const loadTodos = async () =>{
-            await fetchTodos(filter)
-        }
-        loadTodos()
+            fetchTodos(filter)
     }, [filter]);
 
 
     return (
         <div className={'app-container'}>
-            <AddTask
+            <AddNewTask
                 fetchTodos={fetchTodos}
                 filter={filter}
             />

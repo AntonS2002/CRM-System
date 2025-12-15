@@ -1,7 +1,14 @@
 import {useState} from "react";
-import {apiTodo} from "../api/api.ts";
-import type {TasksListProps, TodoRequest} from "../type";
+import type {FilterType, Todo, TodoRequest} from "../type";
+import {deleteTodos, saveTodos, toggleTodos} from "../api/api.ts";
 
+export interface TasksListProps {
+    loading: boolean;
+    todos: Todo[];
+    setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+    fetchTodos: (status: FilterType) => void;
+    filter: FilterType;
+}
 
 export const TasksList = ({loading, todos, setTodos, fetchTodos, filter}: TasksListProps) => {
 
@@ -28,8 +35,17 @@ export const TasksList = ({loading, todos, setTodos, fetchTodos, filter}: TasksL
         }
 
         try {
+
+            const updateTodo: Todo = {
+                id: id,
+                title: editText.trim(),
+                created:'',
+                isDone: false
+            }
+
             //Ищем нужный туду
-            await apiTodo.saveTodos(id, {title: editText.trim()})
+            await saveTodos(id, updateTodo)
+
 
             // Обновить локальное состояние
             setTodos(prev => prev.map(todo => todo.id === id ? {...todo, title: editText.trim()} : todo))
@@ -58,7 +74,7 @@ export const TasksList = ({loading, todos, setTodos, fetchTodos, filter}: TasksL
     // Обработка удаления задачи
     const handleOnClickDelete = async (id: number) => {
         try {
-            await apiTodo.deleteTodos(id)
+            await deleteTodos(id)
             setTodos(prev => prev.filter(todo => todo.id !== id))
 
             await fetchTodos(filter)
@@ -78,7 +94,7 @@ export const TasksList = ({loading, todos, setTodos, fetchTodos, filter}: TasksL
                 isDone: !todoUpdate.isDone
             }
             // передаем данные и id
-            const data =  await apiTodo.toggleTodos(id, todoRequest)
+            const data =  await toggleTodos(id, todoRequest)
 
             // Изменение статуса локально
             setTodos(prev => prev.map(todo => todo.id === id ? {...todo, isDone: data.isDone} : todo))

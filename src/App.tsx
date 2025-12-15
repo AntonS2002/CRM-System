@@ -1,5 +1,5 @@
 import './App.css'
-import {TodoList} from "./pages/TodoList.tsx";
+import {TodoListPage} from "./pages/TodoListPage.tsx";
 
 
 
@@ -7,9 +7,7 @@ import {TodoList} from "./pages/TodoList.tsx";
 function App() {
 
   return (
-    <div>
-      <TodoList />
-    </div>
+      <TodoListPage />
   )
 }
 
