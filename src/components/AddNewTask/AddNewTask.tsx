@@ -1,74 +1,68 @@
-import {type ChangeEvent, useState} from "react";
-import type {FilterType} from "../../type";
+import {type ChangeEvent, type FormEvent, useState} from "react";
 import {addTodos} from "../../api/api.ts";
+import styles from './AddNewTask.module.scss'
 
 export interface AddTaskProps {
-    fetchTodos: (status: FilterType) => void;
-    filter: FilterType;
+    fetchTodos: () => void;
 }
 
-export const AddNewTask = ({fetchTodos, filter}: AddTaskProps) => {
+export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
     //ошибка валидации
     const [inputError, setInputError] = useState<string>('')
 
-    // Значение в текстовом поле
-    const [valueInInput, setValueInInput] = useState<string>('')
+    // Текст в поле ввода
+    const [textInInput, setTextInInput] = useState<string>('')
 
-    const handleOnClickAdd = async () => {
+    const handleSubmitAddTask = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+
         setInputError('')
-        if(!valueInInput.trim()) {
+        if(!textInInput.trim()) {
             setInputError('Введите название задачи')
             return
         }
 
-        if (valueInInput.trim().length < 2) {
+        if (textInInput.trim().length < 2) {
             setInputError('Минимум 2 символа')
             return
         }
 
-        if(valueInInput.trim().length > 64) {
+        if(textInInput.trim().length > 64) {
             setInputError('Максимум 64 символа')
             return
         }
 
         try {
-            await addTodos({title: valueInInput, isDone: false})
-            await fetchTodos(filter)
-            setValueInInput('')
+            await addTodos({title: textInInput, isDone: false})
+            await fetchTodos()
+            setTextInInput('')
         } catch (error) {
             console.error('Ошибка добавления задачи', error)
         }
-
-
     }
 
 // Обработка изменения в input
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setValueInInput(e.target.value)
+        setTextInInput(e.target.value)
     }
 
     return(
         <div>
-            <div className={'container'}>
+            <form className={styles.form} onSubmit={handleSubmitAddTask}>
                 <input
                     type="text"
                     placeholder="Введите название задачи..."
                     onChange={handleChange}
-                    value={valueInInput}
-                    className={'inp'}
-                    onKeyPress={(e) => {
-                        if(e.key === 'Enter'){
-                            handleOnClickAdd()
-                        }}
-                    }
+                    value={textInInput}
+                    className={styles.input}
+                    name="title"
                 />
                 <button
-                    onClick={handleOnClickAdd}
-                    className={'btn'}
+                    className={styles.button}
                 >Добавить
                 </button>
-            </div>
-            {inputError && (<div className={'span-err'}>{inputError}</div>)}
+            </form>
+            {inputError && (<div className={styles.error}>{inputError}</div>)}
         </div>
 
     )

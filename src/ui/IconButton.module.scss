@@ -1,0 +1,21 @@
+.iconButton{
+    text-align: right;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #64a5ff;
+
+    &:hover{
+        opacity: 0.6;
+    }
+
+    &--primary{
+        background-color: #037ef3;
+    }
+
+    &--secondary{
+        background-color: #ff0000;
+    }
+}
+
+

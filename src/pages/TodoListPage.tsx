@@ -1,9 +1,10 @@
 import {useEffect, useState} from "react";
 import type {FilterType, Todo, TodoInfo} from "../type";
-import {TasksList} from "../components/TasksList.tsx";
+import {TasksList} from "../components/TasksList/TasksList.tsx";
 import {FilteredTasks} from "../components/TasksFilter/TasksFilter.tsx";
 import {AddNewTask} from "../components/AddNewTask/AddNewTask.tsx";
 import {getTodos} from "../api/api.ts";
+import styles from './TodoListPage.module.scss'
 
 export const TodoListPage = () => {
 
@@ -20,10 +21,10 @@ export const TodoListPage = () => {
     const [filter, setFilter] = useState<FilterType>('all')
 
     //Просмотр списка задач
-    const fetchTodos = async(status: FilterType): Promise<void> => {
+    const fetchTodos = async(): Promise<void> => {
         setLoading(true)
         try {
-            const dataTodos = await getTodos(status)
+            const dataTodos = await getTodos(filter)
 
                 setTodos(dataTodos.data)
                 console.log(`Список задач: ${dataTodos.data.length}`)
@@ -42,15 +43,14 @@ export const TodoListPage = () => {
 
     //Вывод задач после перезагрузки страницы
     useEffect(() => {
-            fetchTodos(filter)
+            fetchTodos()
     }, [filter]);
 
 
     return (
-        <div className={'app-container'}>
+        <div className={styles.appContainer}>
             <AddNewTask
                 fetchTodos={fetchTodos}
-                filter={filter}
             />
             <FilteredTasks
                 filter={filter}
@@ -62,7 +62,6 @@ export const TodoListPage = () => {
                 todos={todos}
                 setTodos={setTodos}
                 fetchTodos={fetchTodos}
-                filter={filter}
             />
         </div>
     )

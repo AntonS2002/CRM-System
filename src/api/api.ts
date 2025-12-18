@@ -1,6 +1,6 @@
 import type {FilterType, MetaResponse, Todo, TodoInfo, TodoRequest} from "../type";
 
-const url = import.meta.env.VITE_API_URL;
+const url = 'https://easydev.club/api/v1/todos';
 
 // получить список задач
 export async function getTodos(status: FilterType): Promise<MetaResponse<Todo, TodoInfo>> {
@@ -17,7 +17,7 @@ return response.json();
 }
 
 // добавить задачу
-export async function addTodos(todo: TodoRequest) {
+export async function addTodos(todo: Partial<TodoRequest>) {
     const response = await fetch(`${url}`, {
         method: 'POST',
         headers: {
@@ -31,7 +31,7 @@ export async function addTodos(todo: TodoRequest) {
 }
 
 // сохранение задачи
-export async function saveTodos(id: number, updateTodo: Todo): Promise<Todo> {
+export async function editTodos(id: number, updateTodo: Partial<Todo>): Promise<Todo> {
     const response = await fetch(`${url}/${id}`,{
         method: 'PUT',
         headers: {
@@ -58,18 +58,4 @@ export async function deleteTodos(id: number) {
     }
 }
 
-// изменение статуса задачи
-export async function toggleTodos(id: number, todo: TodoRequest) {
-    const response = await fetch(`${url}/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(todo)
-    })
 
-    if(!response.ok){
-        console.log(`Ошибка изменения статуса задачи: ${response.status}`)
-    }
-    return response.json();
-}
