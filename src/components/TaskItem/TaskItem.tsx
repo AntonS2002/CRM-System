@@ -3,6 +3,9 @@ import type {Todo} from "../../type";
 import {deleteTodos, editTodos} from "../../api/api.ts";
 import styles from './TaskItem.module.scss'
 import {IconButton} from "../../ui/IconButton.tsx";
+import {DeleteIcon} from "../../icons/deleteTodo.tsx";
+import {EditIcon} from "../../icons/editTodo.tsx";
+
 
 
 export interface TodoItemProps {
@@ -140,14 +143,14 @@ export const TaskItem = ({ todo, todos, setTodos, fetchTodos}: TodoItemProps) =>
                             onClick={() => handleStartEdit(todo.id, todo.title)}
                             variant={'primary'}
                         >
-                            <img src="src/assert/editTodo.svg" alt="edit"/>
+                            <EditIcon/>
                         </IconButton>
                 )}
                 <IconButton
                     onClick={() => handleDeleteTask(todo.id)}
                     variant={'secondary'}
                 >
-                    <img src="src/assert/deleteTodo.svg" alt="edit"/>
+                    <DeleteIcon/>
                 </IconButton>
             </div>
         </div>
