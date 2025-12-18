@@ -63,13 +63,14 @@ export const TaskItem = ({ todo, todos, setTodos, fetchTodos}: TodoItemProps) =>
             await fetchTodos()
         }catch (error){
             console.error(error)
+            alert('Ошибка редактирования задачи')
         }
     }
 
     // Обработка отмены редактирования
     const handleCancelEdit = () => {
-        setIsEditingId(null)
-        setEditText('')
+            setIsEditingId(null)
+            setEditText('')
     }
 
     // Обработка удаления задачи
@@ -104,6 +105,7 @@ export const TaskItem = ({ todo, todos, setTodos, fetchTodos}: TodoItemProps) =>
 
         } catch (error) {
             console.error(error)
+            alert('Ошибка переключения')
         }
     }
 

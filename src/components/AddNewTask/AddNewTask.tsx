@@ -38,6 +38,7 @@ export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
             setTextInInput('')
         } catch (error) {
             console.error('Ошибка добавления задачи', error)
+            alert('Ошибка добавления задачи')
         }
     }
 
