@@ -4,11 +4,12 @@ import type {MouseEventHandler, ReactNode} from "react";
 interface IconButtonProps {
     children: ReactNode,
     onClick?: MouseEventHandler<HTMLButtonElement>,
-    variant?: 'primary' | 'secondary'
+    variant?: 'primary' | 'secondary',
+    type?: 'button' | 'submit'
 }
 
 
-export const IconButton = ({onClick, children, variant, ...props  }: IconButtonProps) => {
+export const IconButton = ({onClick, children, variant = 'primary', ...props  }: IconButtonProps) => {
 
     return (
         <button className={`${styles.iconButton} ${styles[`iconButton--${variant}`]}`}

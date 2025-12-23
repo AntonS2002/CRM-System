@@ -1,6 +1,8 @@
 import {type ChangeEvent, type FormEvent, useState} from "react";
 import {addTodos} from "../../api/api.ts";
 import styles from './AddNewTask.module.scss'
+import {Validation} from "../../validation.ts";
+
 
 export interface AddTaskProps {
     fetchTodos: () => void;
@@ -15,20 +17,11 @@ export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
 
     const handleSubmitAddTask = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-
         setInputError('')
-        if(!textInInput.trim()) {
-            setInputError('Введите название задачи')
-            return
-        }
 
-        if (textInInput.trim().length < 2) {
-            setInputError('Минимум 2 символа')
-            return
-        }
-
-        if(textInInput.trim().length > 64) {
-            setInputError('Максимум 64 символа')
+        const validation = Validation(textInInput.trim())
+        if (!validation.isValid) {
+            setInputError(validation.value)
             return
         }
 

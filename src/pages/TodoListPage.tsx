@@ -60,7 +60,6 @@ export const TodoListPage = () => {
             <TasksList
                 loading={loading}
                 todos={todos}
-                setTodos={setTodos}
                 fetchTodos={fetchTodos}
             />
         </div>
