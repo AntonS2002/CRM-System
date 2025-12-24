@@ -57,11 +57,11 @@ export const TodoListPage = () => {
                 setFilter={setFilter}
                 count={count}
             />
-            <TasksList
-                loading={loading}
+
+            {loading ? (<p>Loading...</p>) :(<TasksList
                 todos={todos}
                 fetchTodos={fetchTodos}
-            />
+            />)}
         </div>
     )
 }

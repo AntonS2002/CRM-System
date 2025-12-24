@@ -3,21 +3,19 @@ import {TaskItem} from "../TaskItem/TaskItem.tsx";
 import styles from './TaskList.module.scss'
 
 export interface TasksListProps {
-    loading: boolean;
+
     todos: Todo[];
     fetchTodos: () => void;
 }
 
-export const TasksList = ({loading, todos, fetchTodos}: TasksListProps) => {
-
+export const TasksList = ({ todos, fetchTodos}: TasksListProps) => {
 
     return(
         <div>
-            {loading ? (<div>Loading...</div>) :(<ul className={styles.todosContainer}>
+            <ul className={styles.todosContainer}>
                 {todos.length > 0 ? (todos.map(todo => (
-                    <li>
+                    <li key={todo.id}>
                         <TaskItem
-                            key={todo.id}
                             todo={todo}
                             todos={todos}
                             fetchTodos={fetchTodos}
@@ -26,7 +24,7 @@ export const TasksList = ({loading, todos, fetchTodos}: TasksListProps) => {
                 ))) : (<div>
                     <p>Список задач пуст</p>
                 </div>)}
-            </ul>)}
+            </ul>)
         </div>
     )
 }

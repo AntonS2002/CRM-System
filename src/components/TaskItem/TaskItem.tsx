@@ -5,7 +5,7 @@ import styles from './TaskItem.module.scss'
 import {IconButton} from "../../ui/IconButton.tsx";
 import {DeleteIcon} from "../../icons/deleteTodo.tsx";
 import {EditIcon} from "../../icons/editTodo.tsx";
-import {Validation} from "../../validation.ts";
+import {validateTextInput} from "../../validateTextInput.ts";
 
 
 export interface TodoItemProps {
@@ -24,7 +24,7 @@ export const TaskItem = ({ todo, todos, fetchTodos}: TodoItemProps) => {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>, id: number) => {
         e.preventDefault();
 
-        const validation = Validation(editText)
+        const validation = validateTextInput(editText)
         if(!validation.isValid){
             setEditingId(null)
             return

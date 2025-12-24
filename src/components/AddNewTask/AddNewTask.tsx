@@ -1,7 +1,7 @@
 import {type ChangeEvent, type FormEvent, useState} from "react";
 import {addTodos} from "../../api/api.ts";
 import styles from './AddNewTask.module.scss'
-import {Validation} from "../../validation.ts";
+import {validateTextInput} from "../../validateTextInput.ts";
 
 
 export interface AddTaskProps {
@@ -19,9 +19,9 @@ export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
         event.preventDefault()
         setInputError('')
 
-        const validation = Validation(textInInput.trim())
+        const validation = validateTextInput(textInInput.trim())
         if (!validation.isValid) {
-            setInputError(validation.value)
+            setInputError(validation.errorMessage)
             return
         }
 
