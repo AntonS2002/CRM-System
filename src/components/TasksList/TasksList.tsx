@@ -11,7 +11,7 @@ export interface TasksListProps {
 export const TasksList = ({ todos, fetchTodos}: TasksListProps) => {
 
     return(
-        <div>
+        <>
             <ul className={styles.todosContainer}>
                 {todos.length > 0 ? (todos.map(todo => (
                     <li key={todo.id}>
@@ -21,10 +21,8 @@ export const TasksList = ({ todos, fetchTodos}: TasksListProps) => {
                             fetchTodos={fetchTodos}
                         />
                     </li>
-                ))) : (<div>
-                    <p>Список задач пуст</p>
-                </div>)}
-            </ul>)
-        </div>
+                ))) : (<p>Список задач пуст</p>)}
+            </ul>
+        </>
     )
 }

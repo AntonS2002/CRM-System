@@ -2,6 +2,7 @@ import {type ChangeEvent, type FormEvent, useState} from "react";
 import {addTodos} from "../../api/api.ts";
 import styles from './AddNewTask.module.scss'
 import {validateTextInput} from "../../validateTextInput.ts";
+import {Button, Input} from "antd";
 
 
 export interface AddTaskProps {
@@ -41,9 +42,10 @@ export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
     }
 
     return(
+
         <div>
             <form className={styles.form} onSubmit={handleSubmitAddTask}>
-                <input
+                <Input
                     type="text"
                     placeholder="Введите название задачи..."
                     onChange={handleChange}
@@ -51,10 +53,7 @@ export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
                     className={styles.input}
                     name="title"
                 />
-                <button
-                    className={styles.button}
-                >Добавить
-                </button>
+                <Button htmlType="submit">Добавить</Button>
             </form>
             {inputError && (<div className={styles.error}>{inputError}</div>)}
         </div>

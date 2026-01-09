@@ -6,6 +6,8 @@ import {AddNewTask} from "../components/AddNewTask/AddNewTask.tsx";
 import {getTodos} from "../api/api.ts";
 import styles from './TodoListPage.module.scss'
 
+
+
 export const TodoListPage = () => {
 
     const [count, setCount] = useState<TodoInfo>({
@@ -48,20 +50,23 @@ export const TodoListPage = () => {
 
 
     return (
-        <div className={styles.appContainer}>
-            <AddNewTask
-                fetchTodos={fetchTodos}
-            />
-            <FilteredTasks
-                filter={filter}
-                setFilter={setFilter}
-                count={count}
-            />
+        <div className={styles.todoListPage}>
+            <div className={styles.appContainer}>
+                <AddNewTask
+                    fetchTodos={fetchTodos}
+                />
+                <FilteredTasks
+                    filter={filter}
+                    setFilter={setFilter}
+                    count={count}
+                />
 
-            {loading ? (<p>Loading...</p>) :(<TasksList
-                todos={todos}
-                fetchTodos={fetchTodos}
-            />)}
+                {loading ? (<p>Loading...</p>) :(<TasksList
+                    todos={todos}
+                    fetchTodos={fetchTodos}
+                />)}
+        </div>
+
         </div>
     )
 }

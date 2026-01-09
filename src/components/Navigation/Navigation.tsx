@@ -1,0 +1,34 @@
+import type { MenuProps } from 'antd';
+import { Menu } from 'antd';
+import {NavLink} from "react-router-dom";
+import styles from "../Navigation/Navigation.module.scss"
+
+type MenuItem = Required<MenuProps>['items'][number];
+
+const items: MenuItem[] = [
+    {
+        key: 'todo-list',
+        label: (
+            <NavLink
+                to={"/"}
+                className={({isActive}) => (isActive ? 'active' : undefined)}
+            >
+                Список задач
+            </NavLink>
+        )},
+
+    {
+        key: 'profile',
+        label: (
+            <NavLink
+                to={"/profile"}
+                className={({isActive}) => (isActive ? 'active' : undefined)}
+            >
+                Профиль
+            </NavLink>
+        ) },
+]
+
+export const Navigation = () => {
+    return <Menu className={styles.navigation} items={items}/>;
+}
