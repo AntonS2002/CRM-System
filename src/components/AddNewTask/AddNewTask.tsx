@@ -1,62 +1,65 @@
-import {type ChangeEvent, type FormEvent, useState} from "react";
 import {addTodos} from "../../api/api.ts";
 import styles from './AddNewTask.module.scss'
-import {validateTextInput} from "../../validateTextInput.ts";
-import {Button, Input} from "antd";
-
+import {Button, Form, Input} from "antd";
 
 export interface AddTaskProps {
     fetchTodos: () => void;
 }
 
 export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
-    //ошибка валидации
-    const [inputError, setInputError] = useState<string>('')
+    // Создаем экземпляр формы
+    const [form] = Form.useForm();
 
-    // Текст в поле ввода
-    const [textInInput, setTextInInput] = useState<string>('')
-
-    const handleSubmitAddTask = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        setInputError('')
-
-        const validation = validateTextInput(textInInput.trim())
-        if (!validation.isValid) {
-            setInputError(validation.errorMessage)
-            return
-        }
-
+    // Обработка добавления задачи
+    const handleSubmitAddTask = async (value: {title: string}) => {
+        const title = value.title.trim()
         try {
-            await addTodos({title: textInInput, isDone: false})
+            await addTodos({title: title, isDone: false})
             await fetchTodos()
-            setTextInInput('')
+            form.resetFields()
         } catch (error) {
             console.error('Ошибка добавления задачи', error)
             alert('Ошибка добавления задачи')
         }
     }
 
-// Обработка изменения в input
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setTextInInput(e.target.value)
-    }
-
     return(
-
-        <div>
-            <form className={styles.form} onSubmit={handleSubmitAddTask}>
-                <Input
-                    type="text"
-                    placeholder="Введите название задачи..."
-                    onChange={handleChange}
-                    value={textInInput}
-                    className={styles.input}
+        <>
+            <Form
+                form={form}
+                className={styles.form}
+                onFinish={handleSubmitAddTask}
+            >
+                <Form.Item
                     name="title"
-                />
-                <Button htmlType="submit">Добавить</Button>
-            </form>
-            {inputError && (<div className={styles.error}>{inputError}</div>)}
-        </div>
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Введите название задачи!'
+                        },
+                        {
+                            min: 2,
+                            message: 'Минимум 2 символа'
+                        },
+                        {
+                            max: 64,
+                            message: 'Максимум 64 символа'
+                        }
+                    ]}
+                >
+                    <Input
+                        type="text"
+                        placeholder="Введите название задачи..."
+                        className={styles.input}
+                        name="title"
+                    />
+                </Form.Item>
+                <Form.Item>
+                    <Button type="primary" htmlType="submit">Добавить</Button>
+                </Form.Item>
+
+            </Form>
+        </>
 
     )
 }

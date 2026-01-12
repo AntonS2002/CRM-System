@@ -9,7 +9,6 @@ export const RootLayout = () => {
             <nav className={styles.nav}>
                 <Navigation/>
             </nav>
-
             <main className={styles.outletContainer}>
                 <Outlet/>
             </main>

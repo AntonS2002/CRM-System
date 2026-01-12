@@ -43,11 +43,14 @@ export const TodoListPage = () => {
         }
     }
 
-    //Вывод задач после перезагрузки страницы
+    //Вывод задач после перезагрузки страницы и обновление каждые 5 секунд
     useEffect(() => {
-            fetchTodos()
+        fetchTodos()
+        const intervalId = setInterval(fetchTodos, 5000)
+        return () => {
+            clearInterval(intervalId)
+        }
     }, [filter]);
-
 
     return (
         <div className={styles.todoListPage}>
