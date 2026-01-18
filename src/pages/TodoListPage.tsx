@@ -33,12 +33,6 @@ export const TodoListPage = () => {
 
     //Просмотр списка задач
     const fetchTodos = useCallback(async(): Promise<void> => {
-
-        if(isEditingRef.current) {
-            console.log('Пропускаем автообновление: в процессе редактирование')
-            return
-        }
-
         setLoading(true)
         try {
             const dataTodos = await getTodos(filter)

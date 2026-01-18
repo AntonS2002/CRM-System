@@ -31,12 +31,13 @@ export const TaskItem = ({ todo, todos, fetchTodos, setIsEditing}: TodoItemProps
             }
 
             await editTodos(EditingId, updateTodo)
-            handleCancelEdit()
             setIsEditing(false)
+            handleCancelEdit()
             await fetchTodos()
 
         } catch (error) {
             console.log('Ошибка отправки формы:', error)
+            setIsEditing(false)
         }
 
     }
