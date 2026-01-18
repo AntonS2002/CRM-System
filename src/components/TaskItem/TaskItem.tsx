@@ -8,14 +8,15 @@ import {CheckOutlined, CloseOutlined, EditOutlined, DeleteOutlined} from "@ant-d
 export interface TodoItemProps {
     todo: Todo
     todos: Todo[]
-
     fetchTodos: () => void;
+    setIsEditing: (isEditing: boolean) => void;
 }
 
-export const TaskItem = ({ todo, todos, fetchTodos}: TodoItemProps) => {
+export const TaskItem = ({ todo, todos, fetchTodos, setIsEditing}: TodoItemProps) => {
     // Состояние для редактирования задач
     const [EditingId, setEditingId] = useState<number | null>(null)
     const [editText, setEditText] = useState<string>('')
+
 
     // Отправка формы
     const handleSubmit = async (values: {title: string}) => {
@@ -31,12 +32,12 @@ export const TaskItem = ({ todo, todos, fetchTodos}: TodoItemProps) => {
 
             await editTodos(EditingId, updateTodo)
             handleCancelEdit()
+            setIsEditing(false)
             await fetchTodos()
 
         } catch (error) {
             console.log('Ошибка отправки формы:', error)
         }
-
 
     }
 
@@ -44,6 +45,7 @@ export const TaskItem = ({ todo, todos, fetchTodos}: TodoItemProps) => {
     const handleCancelEdit = () => {
             setEditingId(null)
             setEditText('')
+            setIsEditing(false)
     }
 
     // Обработка удаления задачи
@@ -82,6 +84,7 @@ export const TaskItem = ({ todo, todos, fetchTodos}: TodoItemProps) => {
     const handleStartEdit = (id: number, title: string) => {
         setEditText(title)
         setEditingId(id)
+        setIsEditing(true)
     }
 
 

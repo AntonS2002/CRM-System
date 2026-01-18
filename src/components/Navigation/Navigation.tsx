@@ -1,13 +1,13 @@
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
-import {NavLink} from "react-router-dom";
+import {NavLink, useLocation} from "react-router-dom";
 import styles from "../Navigation/Navigation.module.scss"
 
 type MenuItem = Required<MenuProps>['items'][number];
 
 const items: MenuItem[] = [
     {
-        key: 'todo-list',
+        key: '/',
         label: (
             <NavLink
                 to={"/"}
@@ -18,7 +18,7 @@ const items: MenuItem[] = [
         )},
 
     {
-        key: 'profile',
+        key: '/profile',
         label: (
             <NavLink
                 to={"/profile"}
@@ -30,5 +30,14 @@ const items: MenuItem[] = [
 ]
 
 export const Navigation = () => {
-    return <Menu className={styles.navigation} items={items}/>;
+
+    const location = useLocation()
+    const selectedKey = [location.pathname]
+
+    return <Menu
+        className={styles.navigation}
+        items={items}
+        selectedKeys={selectedKey}
+
+    />;
 }

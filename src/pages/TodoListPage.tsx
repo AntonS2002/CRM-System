@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import type {FilterType, Todo, TodoInfo} from "../type";
 import {TasksList} from "../components/TasksList/TasksList.tsx";
 import {FilteredTasks} from "../components/TasksFilter/TasksFilter.tsx";
@@ -22,35 +22,52 @@ export const TodoListPage = () => {
 
     const [filter, setFilter] = useState<FilterType>('all')
 
+    const [isEditing, setIsEditing] = useState<boolean>(false)
+
+    const isEditingRef = useRef(isEditing)
+
+    // Обновляем ref при изменении состояния
+    useEffect(() => {
+        isEditingRef.current = isEditing
+    }, [isEditing]);
+
     //Просмотр списка задач
-    const fetchTodos = async(): Promise<void> => {
+    const fetchTodos = useCallback(async(): Promise<void> => {
+
+        if(isEditingRef.current) {
+            console.log('Пропускаем автообновление: в процессе редактирование')
+            return
+        }
+
         setLoading(true)
         try {
             const dataTodos = await getTodos(filter)
-
                 setTodos(dataTodos.data)
                 console.log(`Список задач: ${dataTodos.data.length}`)
-
                 if(dataTodos.info) {
                     setCount(dataTodos.info)
                 }
-
         } catch (error) {
             console.log(`Ошибка загрузки задач: ${error}`)
             alert('Ошибка загрузки')
         } finally {
             setLoading(false)
         }
-    }
+    }, [filter])
 
     //Вывод задач после перезагрузки страницы и обновление каждые 5 секунд
     useEffect(() => {
-        fetchTodos()
-        const intervalId = setInterval(fetchTodos, 5000)
+        const safeFetch = () => {
+            if(!isEditingRef.current){
+                fetchTodos()
+            }
+        }
+        safeFetch()
+        const intervalId = setInterval(safeFetch, 5000)
         return () => {
             clearInterval(intervalId)
         }
-    }, [filter]);
+    }, [filter, fetchTodos]);
 
     return (
         <div className={styles.todoListPage}>
@@ -67,6 +84,7 @@ export const TodoListPage = () => {
                 {loading ? (<p>Loading...</p>) :(<TasksList
                     todos={todos}
                     fetchTodos={fetchTodos}
+                    setIsEditing={setIsEditing}
                 />)}
         </div>
 

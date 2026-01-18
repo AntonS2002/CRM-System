@@ -3,12 +3,12 @@ import {TaskItem} from "../TaskItem/TaskItem.tsx";
 import styles from './TaskList.module.scss'
 
 export interface TasksListProps {
-
     todos: Todo[];
     fetchTodos: () => void;
+    setIsEditing: (isEditing: boolean) => void;
 }
 
-export const TasksList = ({ todos, fetchTodos}: TasksListProps) => {
+export const TasksList = ({ todos, fetchTodos, setIsEditing}: TasksListProps) => {
 
     return(
         <>
@@ -16,6 +16,7 @@ export const TasksList = ({ todos, fetchTodos}: TasksListProps) => {
                 {todos.length > 0 ? (todos.map(todo => (
                     <li key={todo.id}>
                         <TaskItem
+                            setIsEditing={setIsEditing}
                             todo={todo}
                             todos={todos}
                             fetchTodos={fetchTodos}
