@@ -38,13 +38,17 @@ export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
                             message: 'Введите название задачи!'
                         },
                         {
+                            pattern: /^\S(?:.*\S)?$/,
+                            message: 'Введите название задачи!'
+                        },
+                        {
                             min: 2,
                             message: 'Минимум 2 символа'
                         },
                         {
                             max: 64,
                             message: 'Максимум 64 символа'
-                        }
+                        },
                     ]}
                 >
                     <Input

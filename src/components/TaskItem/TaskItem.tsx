@@ -116,6 +116,10 @@ export const TaskItem = ({ todo, todos, fetchTodos, setIsEditing}: TodoItemProps
                                         message: 'Название не может быть пустым'
                                     },
                                     {
+                                        pattern: /^\S(?:.*\S)?$/,
+                                        message: 'Название не может быть пустым'
+                                    },
+                                    {
                                         min: 2,
                                         message: 'Минимум 2 символа'
                                     },
