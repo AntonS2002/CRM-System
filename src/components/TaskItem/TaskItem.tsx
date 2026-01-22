@@ -16,6 +16,7 @@ export const TaskItem = ({ todo, todos, fetchTodos, setIsEditing}: TodoItemProps
     // Состояние для редактирования задач
     const [EditingId, setEditingId] = useState<number | null>(null)
     const [editText, setEditText] = useState<string>('')
+    const [isShowCheckbox, setIsShowCheckbox] = useState<boolean>(true)
 
 
     // Отправка формы
@@ -23,11 +24,13 @@ export const TaskItem = ({ todo, todos, fetchTodos, setIsEditing}: TodoItemProps
         try {
             if(EditingId === null) return
 
+            const currentTodo = todos.find(todo => todo.id === EditingId)
+
             const updateTodo: Todo = {
                 id: EditingId,
                 title: values.title,
                 created: '',
-                isDone: false,
+                isDone: currentTodo?.isDone || false,
             }
 
             await editTodos(EditingId, updateTodo)
@@ -65,7 +68,7 @@ export const TaskItem = ({ todo, todos, fetchTodos, setIsEditing}: TodoItemProps
     const handleToggle = async (id: number) => {
         try {
             const updateTodo = todos.find(todo => todo.id === id)
-            if(!updateTodo)return
+            if(!updateTodo) return
 
             // Создаем todoRequest с измененным статусом
             const todoRequest = {
@@ -86,6 +89,7 @@ export const TaskItem = ({ todo, todos, fetchTodos, setIsEditing}: TodoItemProps
         setEditText(title)
         setEditingId(id)
         setIsEditing(true)
+        setIsShowCheckbox(false)
     }
 
 
@@ -95,11 +99,11 @@ export const TaskItem = ({ todo, todos, fetchTodos, setIsEditing}: TodoItemProps
     return (
         <div key={todo.id} className={styles.todo}>
             <div className={styles.item}>
-                <Checkbox
+                {isShowCheckbox && <Checkbox
                     type="checkbox"
                     checked={todo.isDone}
                     onChange={() => handleToggle(todo.id)}
-                />
+                />}
                 {EditingId === todo.id ? (
                     <Form
                         form={form}
