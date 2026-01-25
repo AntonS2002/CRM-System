@@ -37,7 +37,6 @@ export const TodoListPage = () => {
         try {
             const dataTodos = await getTodos(filter)
                 setTodos(dataTodos.data)
-                console.log(`Список задач: ${dataTodos.data.length}`)
                 if(dataTodos.info) {
                     setCount(dataTodos.info)
                 }

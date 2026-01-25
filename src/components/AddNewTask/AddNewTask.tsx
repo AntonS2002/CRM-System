@@ -1,27 +1,50 @@
 import {addTodos} from "../../api/api.ts";
 import styles from './AddNewTask.module.scss'
 import {Button, Form, Input} from "antd";
+import {useCallback, useMemo} from "react";
 
 export interface AddTaskProps {
     fetchTodos: () => void;
 }
-
 export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
     // Создаем экземпляр формы
     const [form] = Form.useForm();
 
+    const rulesNumber = {
+        min: 2,
+        max: 64
+
+}
     // Обработка добавления задачи
-    const handleSubmitAddTask = async (value: {title: string}) => {
+    const handleSubmitAddTask = useCallback(async (value: {title: string}) => {
         const title = value.title.trim()
         try {
             await addTodos({title: title, isDone: false})
             await fetchTodos()
             form.resetFields()
         } catch (error) {
-            console.error('Ошибка добавления задачи', error)
-            alert('Ошибка добавления задачи')
+            alert('Ошибка добавления задачи' + error)
         }
-    }
+    }, [fetchTodos, form]);
+
+    const validationRules = useMemo(() => [
+        {
+            required: true,
+            message: 'Введите название задачи!'
+        },
+        {
+            pattern: /^\S(?:.*\S)?$/,
+            message: 'Введите название задачи!'
+        },
+        {
+            min: rulesNumber.min,
+            message: 'Минимум 2 символа'
+        },
+        {
+            max: rulesNumber.max,
+            message: 'Максимум 64 символа'
+        },
+    ], [rulesNumber.min, rulesNumber.max])
 
     return(
         <>
@@ -32,24 +55,7 @@ export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
             >
                 <Form.Item
                     name="title"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Введите название задачи!'
-                        },
-                        {
-                            pattern: /^\S(?:.*\S)?$/,
-                            message: 'Введите название задачи!'
-                        },
-                        {
-                            min: 2,
-                            message: 'Минимум 2 символа'
-                        },
-                        {
-                            max: 64,
-                            message: 'Максимум 64 символа'
-                        },
-                    ]}
+                    rules={validationRules}
                 >
                     <Input
                         type="text"

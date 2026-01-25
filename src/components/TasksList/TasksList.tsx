@@ -18,7 +18,6 @@ export const TasksList = ({ todos, fetchTodos, setIsEditing}: TasksListProps) =>
                         <TaskItem
                             setIsEditing={setIsEditing}
                             todo={todo}
-                            todos={todos}
                             fetchTodos={fetchTodos}
                         />
                     </li>

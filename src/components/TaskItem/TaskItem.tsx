@@ -7,33 +7,29 @@ import {CheckOutlined, CloseOutlined, EditOutlined, DeleteOutlined} from "@ant-d
 
 export interface TodoItemProps {
     todo: Todo
-    todos: Todo[]
     fetchTodos: () => void;
     setIsEditing: (isEditing: boolean) => void;
 }
 
-export const TaskItem = ({ todo, todos, fetchTodos, setIsEditing}: TodoItemProps) => {
+export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
     // Состояние для редактирования задач
-    const [EditingId, setEditingId] = useState<number | null>(null)
+    const [editingId, setEditingId] = useState<number | null>(null)
     const [editText, setEditText] = useState<string>('')
     const [isShowCheckbox, setIsShowCheckbox] = useState<boolean>(true)
 
 
-    // Отправка формы
-    const handleSubmit = async (values: {title: string}) => {
+    // Обработка отправки редактирования задачи
+    const handleSubmitEditTask = async (values: {title: string}) => {
         try {
-            if(EditingId === null) return
+            if(editingId === null) return
 
-            const currentTodo = todos.find(todo => todo.id === EditingId)
-
-            const updateTodo: Todo = {
-                id: EditingId,
-                title: values.title,
-                created: '',
-                isDone: currentTodo?.isDone || false,
+            const updateTodo = {
+                ...todo,
+                title: values.title
             }
 
-            await editTodos(EditingId, updateTodo)
+
+            await editTodos(editingId, updateTodo)
             setIsEditing(false)
             handleCancelEdit()
             await fetchTodos()
@@ -54,40 +50,35 @@ export const TaskItem = ({ todo, todos, fetchTodos, setIsEditing}: TodoItemProps
 
     // Обработка удаления задачи
     const handleDeleteTask = async (id: number) => {
-
         try {
             await deleteTodos(id)
             await fetchTodos()
         } catch (error) {
-            console.error('Ошибка удаления задачи',error)
-            alert('Ошибка удаления задачи')
+            alert('Ошибка удаления задачи' + error)
         }
     }
 
     // Обработка изменения статуса задачи
-    const handleToggle = async (id: number) => {
+    const handleToggleEditTask = async (id: number) => {
         try {
-            const updateTodo = todos.find(todo => todo.id === id)
-            if(!updateTodo) return
 
             // Создаем todoRequest с измененным статусом
             const todoRequest = {
-                isDone: !updateTodo.isDone
+                isDone: !todo.isDone
             }
 
             await editTodos(id, todoRequest)
             await fetchTodos()
 
         } catch (error) {
-            console.error(error)
-            alert('Ошибка переключения')
+            alert('Ошибка переключения' + error)
         }
     }
 
     // Обработка начала редактирования названия задачи
-    const handleStartEdit = (id: number, title: string) => {
-        setEditText(title)
-        setEditingId(id)
+    const handleStartEdit = () => {
+        setEditText(todo.title)
+        setEditingId(todo.id)
         setIsEditing(true)
         setIsShowCheckbox(false)
     }
@@ -102,12 +93,12 @@ export const TaskItem = ({ todo, todos, fetchTodos, setIsEditing}: TodoItemProps
                 {isShowCheckbox && <Checkbox
                     type="checkbox"
                     checked={todo.isDone}
-                    onChange={() => handleToggle(todo.id)}
+                    onChange={() => handleToggleEditTask(todo.id)}
                 />}
-                {EditingId === todo.id ? (
+                {editingId === todo.id ? (
                     <Form
                         form={form}
-                        onFinish={handleSubmit}
+                        onFinish={handleSubmitEditTask}
                         className={styles.editForm}
                         initialValues={{ title: editText }}
                     >
@@ -162,11 +153,11 @@ export const TaskItem = ({ todo, todos, fetchTodos, setIsEditing}: TodoItemProps
                 ) : (<div>{todo.title}</div>)}
             </div>
             <div className={styles.itemBtn}>
-                {EditingId !== todo.id && (
+                {editingId !== todo.id && (
                     <Space>
                         <Button
                             type="primary"
-                            onClick={() => handleStartEdit(todo.id, todo.title)}
+                            onClick={() => handleStartEdit()}
                             icon={<EditOutlined/>}
                             size="large"
                         />
