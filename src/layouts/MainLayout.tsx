@@ -1,8 +1,8 @@
 import {Outlet} from "react-router-dom";
-import {Navigation} from "../../components/Navigation/Navigation.tsx";
-import styles from "../Root/RootLayout.module.scss"
+import  styles  from "./MainLayout.module.scss"
+import {Navigation} from "../components/Navigation/Navigation.tsx";
 
-export const RootLayout = () => {
+export const MainLayout = () => {
 
     return (
         <div className={styles.rootLayout}>

@@ -45,7 +45,6 @@ export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
             message: 'Максимум 64 символа'
         },
     ], [rulesNumber.min, rulesNumber.max])
-
     return(
         <>
             <Form

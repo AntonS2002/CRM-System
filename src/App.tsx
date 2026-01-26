@@ -1,14 +1,14 @@
 import './App.css'
 import {createBrowserRouter, RouterProvider} from "react-router-dom"
-import {RootLayout} from "./pages/Root/RootLayout.tsx";
 import {TodoListPage} from "./pages/TodoListPage.tsx";
 import {ProfilePage} from "./pages/ProfilePage.tsx";
+import {AuthLayout} from "./layouts/AuthLayout.tsx";
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootLayout/>,
+    element: <AuthLayout/>,
     children: [
       {path: "/", element: <TodoListPage/>},
       {path: "/profile", element: <ProfilePage/>}
