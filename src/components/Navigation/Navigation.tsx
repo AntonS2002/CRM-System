@@ -5,7 +5,7 @@ import styles from "../Navigation/Navigation.module.scss"
 
 type MenuItem = Required<MenuProps>['items'][number];
 
-const items: MenuItem[] = [
+const navigationMenuItems: MenuItem[] = [
     {
         key: '/',
         label: (
@@ -32,12 +32,12 @@ const items: MenuItem[] = [
 export const Navigation = () => {
 
     const location = useLocation()
-    const selectedKey = [location.pathname]
+    const keysSelectedMenuItems = [location.pathname]
 
     return <Menu
         className={styles.navigation}
-        items={items}
-        selectedKeys={selectedKey}
+        items={navigationMenuItems}
+        selectedKeys={keysSelectedMenuItems}
 
     />;
 }

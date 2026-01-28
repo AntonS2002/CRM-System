@@ -3,7 +3,7 @@ import type {FilterType, Todo, TodoInfo} from "../type";
 import {TasksList} from "../components/TasksList/TasksList.tsx";
 import {FilteredTasks} from "../components/TasksFilter/TasksFilter.tsx";
 import {AddNewTask} from "../components/AddNewTask/AddNewTask.tsx";
-import {getTodos} from "../api/api.ts";
+import {getTodo} from "../api/api.ts";
 import styles from './TodoListPage.module.scss'
 
 
@@ -35,7 +35,7 @@ export const TodoListPage = () => {
     const fetchTodos = useCallback(async(): Promise<void> => {
         setLoading(true)
         try {
-            const dataTodos = await getTodos(filter)
+            const dataTodos = await getTodo(filter)
                 setTodos(dataTodos.data)
                 if(dataTodos.info) {
                     setCount(dataTodos.info)

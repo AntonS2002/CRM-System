@@ -1,6 +1,6 @@
 import {useState} from "react";
 import type {Todo} from "../../type";
-import {deleteTodos, editTodos} from "../../api/api.ts";
+import {deleteTodo, editTodo} from "../../api/api.ts";
 import styles from './TaskItem.module.scss'
 import {Button, Checkbox, Form, Input, Space} from "antd";
 import {CheckOutlined, CloseOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons";
@@ -29,7 +29,7 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
             }
 
 
-            await editTodos(editingId, updateTodo)
+            await editTodo(editingId, updateTodo)
             setIsEditing(false)
             handleCancelEdit()
             await fetchTodos()
@@ -51,7 +51,7 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
     // Обработка удаления задачи
     const handleDeleteTask = async (id: number) => {
         try {
-            await deleteTodos(id)
+            await deleteTodo(id)
             await fetchTodos()
         } catch (error) {
             alert('Ошибка удаления задачи' + error)
@@ -67,7 +67,7 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
                 isDone: !todo.isDone
             }
 
-            await editTodos(id, todoRequest)
+            await editTodo(id, todoRequest)
             await fetchTodos()
 
         } catch (error) {

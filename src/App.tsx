@@ -2,13 +2,13 @@ import './App.css'
 import {createBrowserRouter, RouterProvider} from "react-router-dom"
 import {TodoListPage} from "./pages/TodoListPage.tsx";
 import {ProfilePage} from "./pages/ProfilePage.tsx";
-import {AuthLayout} from "./layouts/AuthLayout.tsx";
+import {MainLayout} from "./layouts/MainLayout.tsx";
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AuthLayout/>,
+    element: <MainLayout/>,
     children: [
       {path: "/", element: <TodoListPage/>},
       {path: "/profile", element: <ProfilePage/>}

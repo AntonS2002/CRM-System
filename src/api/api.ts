@@ -2,7 +2,7 @@ import type {FilterType, MetaResponse, Todo, TodoInfo, TodoRequest} from "../typ
 import axios from "axios";
 
 
-const url = axios.create({
+const axiosInstance = axios.create({
     baseURL: 'https://easydev.club/api/v1/todos',
     headers: {
         'Accept': 'application/json',
@@ -11,56 +11,34 @@ const url = axios.create({
 })
 
 // получить список задач
-export async function getTodos(status: FilterType): Promise<MetaResponse<Todo, TodoInfo>> {
-    const response = await url.get('',{
+export async function getTodo(status: FilterType): Promise<MetaResponse<Todo, TodoInfo>> {
+    const response = await axiosInstance.get('',{
         params: {
             filter: status
         }
     })
-    if(response.status !== 200) {
-    throw new Error(`Ошибка, статус: ${response.status}`);
-}
+  //  if(response.status !== 200) {
+  //  throw new Error(`Ошибка, статус: ${response.status}`);
+//}
 return response.data;
 }
 
 // добавить задачу
-export async function addTodos(todo: Partial<TodoRequest>) {
-    try {
-        const response = await url.post(``, todo, {})
+export async function addTodo(todo: Partial<TodoRequest>) {
+        const response = await axiosInstance.post(``, todo, {})
         return response.data;
-
-    } catch (error) {
-        if(axios.isAxiosError(error) && error.response) {
-            throw new Error(`Ошибка добавления задачи: ${error.response.status}`);
-        }
-        throw new Error('Ошибка добавления задачи: неизвестная ошибка')
-    }
 }
 
 // сохранение задачи
-export async function editTodos(id: number, updateTodo: Partial<Todo>): Promise<Todo> {
-    try {
-        const response = await url.put(`/${id}`, updateTodo,{})
+export async function editTodo(id: number, updateTodo: Partial<Todo>): Promise<Todo> {
+        const response = await axiosInstance.put(`/${id}`, updateTodo,{})
         return response.data;
-    } catch (error) {
-        if(axios.isAxiosError(error) && error.response) {
-            throw new Error(`Ошибка редактирования:${error.response.status}`)
-        }
-        throw new Error('Ошибка редактирования: неизвестная ошибка')
-    }
 }
 
 // удаление задачи
-export async function deleteTodos(id: number) {
-    try {
-        const response = await url.delete(`/${id}`, {})
+export async function deleteTodo(id: number) {
+        const response = await axiosInstance.delete(`/${id}`, {})
         return response.data;
-    } catch (error) {
-        if(axios.isAxiosError(error) && error.response){
-            throw new Error(`Ошибка удаления задачи: ${error.response.status}`)
-        }
-        throw new Error('Ошибка удаления задачи: Неизвестная ошибка')
-    }
 }
 
 
