@@ -4,6 +4,7 @@ import {deleteTodo, editTodo} from "../../api/api.ts";
 import styles from './TaskItem.module.scss'
 import {Button, Checkbox, Form, Input, Space} from "antd";
 import {CheckOutlined, CloseOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons";
+import {validationRules} from "../Validation/ValidationRules.tsx";
 
 export interface TodoItemProps {
     todo: Todo
@@ -106,25 +107,7 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
                         <Space>
                             <Form.Item
                                 name="title"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Название не может быть пустым'
-                                    },
-                                    {
-                                        pattern: /^\S(?:.*\S)?$/,
-                                        message: 'Название не может быть пустым'
-                                    },
-                                    {
-                                        min: 2,
-                                        message: 'Минимум 2 символа'
-                                    },
-                                    {
-                                        max: 64,
-                                        message: 'Максимум 64 символа'
-                                    }
-                                ]}
-                            >
+                                rules={validationRules()}>
                                 <Input
                                     value={editText}
                                     onChange={(e) => setEditText(e.target.value)}

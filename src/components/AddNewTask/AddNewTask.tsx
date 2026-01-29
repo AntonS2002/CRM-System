@@ -2,16 +2,13 @@ import {addTodo} from "../../api/api.ts";
 import styles from './AddNewTask.module.scss'
 import {Button, Form, Input} from "antd";
 import {useCallback} from "react";
-import type {Rule} from "antd/es/form";
+import {validationRules} from "../Validation/ValidationRules.tsx";
 
 export interface AddTaskProps {
     fetchTodos: () => void;
 }
 
-const rulesNumber = {
-    min: 2,
-    max: 64
-}
+
 
 export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
     // Создаем экземпляр формы
@@ -29,27 +26,6 @@ export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
             alert('Ошибка добавления задачи' + error)
         }
     }, [fetchTodos, form]);
-
-    const validationRules = (): Rule[] => {
-        return [
-            {
-                required: true,
-                message: 'Введите название задачи!'
-            },
-            {
-                whitespace: true,
-                message: 'Введите название задачи!'
-            },
-            {
-                min: rulesNumber.min,
-                message: 'Минимум 2 символа'
-            },
-            {
-                max: rulesNumber.max,
-                message: 'Максимум 64 символа'
-            },
-        ]
-    }
 
     return(
         <>
