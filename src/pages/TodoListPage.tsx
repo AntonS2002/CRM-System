@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import type {FilterType, Todo, TodoInfo} from "../type";
 import {TasksList} from "../components/TasksList/TasksList.tsx";
-import {FilteredTasks} from "../components/TasksFilter/TasksFilter.tsx";
+import {FilterButtons} from "../components/TasksFilter/TasksFilter.tsx";
 import {AddNewTask} from "../components/AddNewTask/AddNewTask.tsx";
 import {getTodo} from "../api/api.ts";
 import styles from './TodoListPage.module.scss'
@@ -68,7 +68,7 @@ export const TodoListPage = () => {
                 <AddNewTask
                     fetchTodos={fetchTodos}
                 />
-                <FilteredTasks
+                <FilterButtons
                     filter={filter}
                     setFilter={setFilter}
                     count={count}

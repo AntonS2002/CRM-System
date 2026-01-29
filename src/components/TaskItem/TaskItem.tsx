@@ -15,11 +15,12 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
     // Состояние для редактирования задач
     const [editingId, setEditingId] = useState<number | null>(null)
     const [editText, setEditText] = useState<string>('')
-    const [isShowCheckbox, setIsShowCheckbox] = useState<boolean>(true)
 
+    const isEditingThisTask = editingId === todo.id
+    const showCheckbox = !isEditingThisTask
 
     // Обработка отправки редактирования задачи
-    const handleSubmitEditTask = async (values: {title: string}) => {
+    const handleEditTask = async (values: {title: string}) => {
         try {
             if(editingId === null) return
 
@@ -80,7 +81,7 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
         setEditText(todo.title)
         setEditingId(todo.id)
         setIsEditing(true)
-        setIsShowCheckbox(false)
+
     }
 
 
@@ -90,7 +91,7 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
     return (
         <div key={todo.id} className={styles.todo}>
             <div className={styles.item}>
-                {isShowCheckbox && <Checkbox
+                {showCheckbox && <Checkbox
                     type="checkbox"
                     checked={todo.isDone}
                     onChange={() => handleToggleEditTask(todo.id)}
@@ -98,7 +99,7 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
                 {editingId === todo.id ? (
                     <Form
                         form={form}
-                        onFinish={handleSubmitEditTask}
+                        onFinish={handleEditTask}
                         className={styles.editForm}
                         initialValues={{ title: editText }}
                     >
