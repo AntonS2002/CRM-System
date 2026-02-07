@@ -1,12 +1,11 @@
 import type {Rule} from "antd/es/form";
-
-const rulesNumber = {
+const textTaskRules = {
     min: 2,
     max: 64
 }
 
-export const validationRules = (): Rule[] => {
-    return [
+export const textTaskValidationRules: Rule[] =
+   [
         {
             required: true,
             message: 'Введите название задачи!'
@@ -16,12 +15,11 @@ export const validationRules = (): Rule[] => {
             message: 'Введите название задачи!'
         },
         {
-            min: rulesNumber.min,
+            min: textTaskRules.min,
             message: 'Минимум 2 символа'
         },
         {
-            max: rulesNumber.max,
+            max: textTaskRules.max,
             message: 'Максимум 64 символа'
         },
     ]
-}
