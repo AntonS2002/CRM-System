@@ -5,6 +5,7 @@ import {ProfilePage} from "./pages/ProfilePage.tsx";
 import {MainLayout} from "./layouts/MainLayout.tsx";
 
 
+
 const router = createBrowserRouter([
   {
     path: "/",

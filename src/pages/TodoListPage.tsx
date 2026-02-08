@@ -5,6 +5,7 @@ import {FilterButtons} from "../components/TasksFilter/TasksFilter.tsx";
 import {AddNewTask} from "../components/AddNewTask/AddNewTask.tsx";
 import {getTodo} from "../api/api.ts";
 import styles from './TodoListPage.module.scss'
+import {notification} from "antd";
 
 
 
@@ -17,8 +18,6 @@ export const TodoListPage = () => {
     })
 
     const [todos, setTodos] = useState<Todo[]>([])
-
-    const [loading, setLoading] = useState<boolean>(false)
 
     const [filter, setFilter] = useState<FilterType>('all')
 
@@ -33,7 +32,7 @@ export const TodoListPage = () => {
 
     //Просмотр списка задач
     const fetchTodos = useCallback(async(): Promise<void> => {
-        setLoading(true)
+
         try {
             const dataTodos = await getTodo(filter)
                 setTodos(dataTodos.data)
@@ -42,9 +41,10 @@ export const TodoListPage = () => {
                 }
         } catch (error) {
             console.log(`Ошибка загрузки задач: ${error}`)
-            alert('Ошибка загрузки')
-        } finally {
-            setLoading(false)
+            notification.error({
+                message: 'Ошибка',
+                description: 'Задачи не загружены'
+            })
         }
     }, [filter])
 
@@ -74,13 +74,12 @@ export const TodoListPage = () => {
                     count={count}
                 />
 
-                {loading ? (<p>Loading...</p>) :(<TasksList
+                <TasksList
                     todos={todos}
                     fetchTodos={fetchTodos}
                     setIsEditing={setIsEditing}
-                />)}
+                />
         </div>
-
         </div>
     )
 }

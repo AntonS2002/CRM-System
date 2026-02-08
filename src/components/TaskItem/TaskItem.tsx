@@ -1,10 +1,10 @@
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import type {Todo} from "../../type";
 import {deleteTodo, editTodo} from "../../api/api.ts";
 import styles from './TaskItem.module.scss'
-import {Button, Checkbox, Form, Input, Space} from "antd";
+import {Button, Checkbox, Form, Input, notification, Space} from "antd";
 import {CheckOutlined, CloseOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons";
-import {validationRules} from "../Validation/ValidationRules.tsx";
+import {validationRules} from "../Validation/ValidationRules.ts";
 
 export interface TodoItemProps {
     todo: Todo
@@ -17,8 +17,12 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
     const [editingId, setEditingId] = useState<number | null>(null)
     const [editText, setEditText] = useState<string>('')
 
-    const isEditingThisTask = editingId === todo.id
-    const showCheckbox = !isEditingThisTask
+    const showCheckbox = useMemo(() => {
+        const isEditingThisTask = editingId != null && Number(editingId) === Number(todo.id)
+        return !isEditingThisTask
+    }, [editingId, todo.id])
+
+
 
     // Обработка отправки редактирования задачи
     const handleEditTask = async (values: {title: string}) => {
@@ -26,18 +30,28 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
             if(editingId === null) return
 
             const updateTodo = {
-                ...todo,
                 title: values.title
             }
 
 
             await editTodo(editingId, updateTodo)
-            setIsEditing(false)
+
+            notification.success({
+                message: 'Успешно',
+                description: 'Задача обновлена!',
+            })
+
             handleCancelEdit()
-            await fetchTodos()
+                await fetchTodos()
 
         } catch (error) {
-            console.log('Ошибка отправки формы:', error)
+
+            notification.error({
+                message: 'Ошибка',
+                description: 'Не удалось сохранить задачу',
+            })
+
+        } finally {
             setIsEditing(false)
         }
 
@@ -107,10 +121,8 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
                         <Space>
                             <Form.Item
                                 name="title"
-                                rules={validationRules()}>
+                                rules={validationRules}>
                                 <Input
-                                    value={editText}
-                                    onChange={(e) => setEditText(e.target.value)}
                                     className={styles.input}
                                     autoFocus
                                 />

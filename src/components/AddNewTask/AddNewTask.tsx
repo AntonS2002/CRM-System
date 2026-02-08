@@ -2,7 +2,7 @@ import {addTodo} from "../../api/api.ts";
 import styles from './AddNewTask.module.scss'
 import {Button, Form, Input} from "antd";
 import {useCallback} from "react";
-import {validationRules} from "../Validation/ValidationRules.tsx";
+import {validationRules} from "../Validation/ValidationRules.ts";
 
 export interface AddTaskProps {
     fetchTodos: () => void;
@@ -36,7 +36,7 @@ export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
             >
                 <Form.Item
                     name="title"
-                    rules={validationRules()}
+                    rules={validationRules}
                 >
                     <Input
                         type="text"

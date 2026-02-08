@@ -1,7 +1,6 @@
 import  MainPicture  from "../picture/illustration.jpg"
 import MainPicture2  from "../picture/Group.jpg"
 import  styles  from "../../src/layouts/AuthLayout.module.scss"
-import {AuthForm} from "../components/AuthForm/AuthForm.tsx";
 
 export const AuthLayout = () => {
 
@@ -19,7 +18,6 @@ export const AuthLayout = () => {
             </div>
             <div className={styles.containerForm}>
                 <h1>Login to your Account</h1>
-                <AuthForm/>
             </div>
         </div>
 
