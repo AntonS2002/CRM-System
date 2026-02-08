@@ -5,8 +5,7 @@ const rulesNumber = {
     max: 64
 }
 
-export const validationRules = (): Rule[] => {
-    return [
+export const validationRules: Rule[] = [
         {
             required: true,
             message: 'Введите название задачи!'
@@ -24,4 +23,3 @@ export const validationRules = (): Rule[] => {
             message: 'Максимум 64 символа'
         },
     ]
-}
