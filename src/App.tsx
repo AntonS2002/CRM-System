@@ -1,5 +1,6 @@
 import './App.css'
 import {createBrowserRouter, Navigate, RouterProvider} from "react-router-dom"
+
 import {TodoListPage} from "./pages/TodoListPage.tsx";
 import {ProfilePage} from "./pages/ProfilePage.tsx";
 import {MainLayout} from "./layouts/MainLayout.tsx";
@@ -9,7 +10,9 @@ import {LoginPage} from "./pages/LoginPage.tsx";
 
 
 
+
 const router = createBrowserRouter([
+
   {path: "/", element: <Navigate to="/auth/signup" replace />},
 
   {
