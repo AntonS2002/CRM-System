@@ -92,7 +92,7 @@ return (
         <div className={styles.container}>
               <span>Уже зарегистрированы ?</span>
             <span> <Link
-                to={'/auth'}
+                to={'/auth/login'}
                 style={{
                     textDecoration: "none",
                     color: "blue",
