@@ -20,7 +20,7 @@ export const LoginPage = () => {
                 <img src={MainPicture2} alt="123"/>
             </div>
             <div className={styles.containerForm}>
-                <h1>Login to your Account</h1>
+                <h1>Войти в аккаунт</h1>
                 <LoginForm/>
             </div>
         </div>

@@ -7,7 +7,8 @@ import {MainLayout} from "./layouts/MainLayout.tsx";
 import { AuthLayout } from './layouts/AuthLayout.tsx';
 import {SignupPage} from "./pages/SignupPage.tsx";
 import {LoginPage} from "./pages/LoginPage.tsx";
-
+import {Provider} from "react-redux";
+import {store} from "./store"
 
 
 
@@ -39,7 +40,10 @@ const router = createBrowserRouter([
 function App() {
 
   return (
+      <Provider store={store}>
         <RouterProvider router={router}/>
+      </Provider>
+
   )
 }
 

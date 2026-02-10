@@ -19,7 +19,7 @@ export const SignupPage = () => {
                 <img src={MainPicture2} alt="123"/>
             </div>
             <div className={styles.containerForm}>
-                <h1>Login to your Account</h1>
+                <h1>Регистрация пользователя</h1>
                 <SignupForm/>
             </div>
         </div>

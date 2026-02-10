@@ -20,8 +20,9 @@ export const LoginForm = () => {
                     layout="vertical"
                     name="login"
                     rules={loginTextAuthRules}
+
                 >
-                    <Input/>
+                    <Input placeholder={'Введите логин'}/>
                 </Form.Item>
 
                 <Form.Item
@@ -30,7 +31,7 @@ export const LoginForm = () => {
                     name='password'
                     rules={passwordTextAuthRules}
                 >
-                    <Input.Password/>
+                    <Input.Password placeholder={'Введите пароль'}/>
                 </Form.Item>
 
                 <Form.Item>

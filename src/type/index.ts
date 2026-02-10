@@ -25,6 +25,25 @@ export interface MetaResponse<T, N> {
 }
 export type FilterType = 'all' | 'completed' | 'inWork';
 
+export interface UserRegistration {
+    login: string;
+    username: string;
+    password: string;
+    email: string;
+    phoneNumber: string;
+}
+
+export interface Profile {
+    id: number;
+    username: string;
+    email: string;
+    date: string;
+    isBlocked: boolean;
+    roles: Role[];
+    phoneNumber: string;
+}
+
+type Role = ADMIN | USER | MODERATOR
 
 
 
