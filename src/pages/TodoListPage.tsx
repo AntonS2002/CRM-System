@@ -1,10 +1,13 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import type {FilterType, Todo, TodoInfo} from "../type";
 import {TasksList} from "../components/TasksList/TasksList.tsx";
-import {FilteredTasks} from "../components/TasksFilter/TasksFilter.tsx";
+import {FilterButtons} from "../components/TasksFilter/TasksFilter.tsx";
 import {AddNewTask} from "../components/AddNewTask/AddNewTask.tsx";
-import {getTodos} from "../api/api.ts";
+import {getTodo} from "../api/api.ts";
 import styles from './TodoListPage.module.scss'
+import {notification} from "antd";
+
+
 
 export const TodoListPage = () => {
 
@@ -16,52 +19,67 @@ export const TodoListPage = () => {
 
     const [todos, setTodos] = useState<Todo[]>([])
 
-    const [loading, setLoading] = useState<boolean>(false)
-
     const [filter, setFilter] = useState<FilterType>('all')
 
+    const [isEditing, setIsEditing] = useState<boolean>(false)
+
+    const isEditingRef = useRef(isEditing)
+
+    // Обновляем ref при изменении состояния
+    useEffect(() => {
+        isEditingRef.current = isEditing
+    }, [isEditing]);
+
     //Просмотр списка задач
-    const fetchTodos = async(): Promise<void> => {
-        setLoading(true)
+    const fetchTodos = useCallback(async(): Promise<void> => {
+
         try {
-            const dataTodos = await getTodos(filter)
-
+            const dataTodos = await getTodo(filter)
                 setTodos(dataTodos.data)
-                console.log(`Список задач: ${dataTodos.data.length}`)
-
                 if(dataTodos.info) {
                     setCount(dataTodos.info)
                 }
-
         } catch (error) {
             console.log(`Ошибка загрузки задач: ${error}`)
-            alert('Ошибка загрузки')
-        } finally {
-            setLoading(false)
+            notification.error({
+                message: 'Ошибка',
+                description: 'Задачи не загружены'
+            })
         }
-    }
+    }, [filter])
 
-    //Вывод задач после перезагрузки страницы
+    //Вывод задач после перезагрузки страницы и обновление каждые 5 секунд
     useEffect(() => {
-            fetchTodos()
-    }, [filter]);
-
+        const safeFetch = () => {
+            if(!isEditingRef.current){
+                fetchTodos()
+            }
+        }
+        safeFetch()
+        const intervalId = setInterval(safeFetch, 5000)
+        return () => {
+            clearInterval(intervalId)
+        }
+    }, [filter, fetchTodos]);
 
     return (
-        <div className={styles.appContainer}>
-            <AddNewTask
-                fetchTodos={fetchTodos}
-            />
-            <FilteredTasks
-                filter={filter}
-                setFilter={setFilter}
-                count={count}
-            />
+        <div className={styles.todoListPage}>
+            <div className={styles.appContainer}>
+                <AddNewTask
+                    fetchTodos={fetchTodos}
+                />
+                <FilterButtons
+                    filter={filter}
+                    setFilter={setFilter}
+                    count={count}
+                />
 
-            {loading ? (<p>Loading...</p>) :(<TasksList
-                todos={todos}
-                fetchTodos={fetchTodos}
-            />)}
+                <TasksList
+                    todos={todos}
+                    fetchTodos={fetchTodos}
+                    setIsEditing={setIsEditing}
+                />
+        </div>
         </div>
     )
 }

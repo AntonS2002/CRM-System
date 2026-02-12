@@ -9,7 +9,7 @@
   border: none ;
   border-bottom: 1px solid;
   padding: 10px;
-  width: 300px;
+  width: auto;
 }
 
 .button {
@@ -22,9 +22,4 @@
   &:hover {
     background-color: #006eff;
   }
-}
-
-.error {
-  color: red;
-  margin-top: 10px;
 }

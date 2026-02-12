@@ -1,9 +1,15 @@
+.todoListPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .appContainer {
   display: flex;
   flex-direction: column;
   height: auto;
   width: auto;
-  background-color: rgba(224, 224, 224, 0.42);
+  background-color: rgba(255, 255, 255, 0.42);
   justify-content: center;
   align-items: center;
   margin: 40px;

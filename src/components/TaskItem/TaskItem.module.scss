@@ -17,9 +17,7 @@
   gap: 20px;
 }
 
-.itemBtn {
-  display: flex;
-  flex-direction: row;
+.editForm {
   gap: 10px;
 }
 
@@ -27,59 +25,13 @@
   border: none ;
   border-bottom: 1px solid;
   padding: 10px;
+  margin-right: 10px;
   width: 300px;
 }
 
-.btny {
-  text-align: right;
-  border: none;
-  border-radius: 5px;
-  padding: 10px;
-  background-color: #50da3f;
-  color: white;
 
-  &:hover {
-    background-color: #5ae04e;
-  }
-}
 
-.btnn {
-  text-align: right;
-  border: none;
-  border-radius: 5px;
-  padding: 10px;
-  background-color: #d50071;
-  color: white;
 
-  &:hover {
-    background-color: #bf365d;
-  }
-}
 
-.btnEdit {
-  text-align: right;
-  border: none;
-  border-radius: 5px;
-  padding: 10px;
-  background-color: #64a5ff;
 
-  &:hover {
-    background-color: #197dfe;
-  }
-}
 
-.btnDelete {
-  text-align: right;
-  border: none;
-  border-radius: 5px;
-  padding: 10px;
-  background-color: #ff6464;
-
-  &:hover {
-    background-color: #ff0000;
-  }
-}
-
-.btnImg {
-  width: 20px;
-}

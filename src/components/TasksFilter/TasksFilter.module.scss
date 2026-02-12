@@ -3,24 +3,21 @@
   gap: 10px;
   justify-content: center;
   align-items: center;
+  padding: 10px;
 }
 
-.button {
+.segmented {
   text-align: right;
   border: none;
   border-radius: 5px;
   padding: 10px;
-  background-color: #00959f;
+  background-color: #3487ff;
   color: white;
   margin-top:  10px;
 
-  &:hover {
-    background-color: #00b6bc;
-  }
-  &.active {
-    background: #007bff;
-    color: white;
-    border-color: #007bff;
-  }
 
-}
+  &.active {
+    background: #0060c2;
+    color: #ffffff;
+    border: none;
+  }}

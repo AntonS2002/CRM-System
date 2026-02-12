@@ -1,52 +1,59 @@
-import {type FormEvent, useState} from "react";
+import {useMemo, useState} from "react";
 import type {Todo} from "../../type";
-import {deleteTodos, editTodos} from "../../api/api.ts";
+import {deleteTodo, editTodo} from "../../api/api.ts";
 import styles from './TaskItem.module.scss'
-import {IconButton} from "../../ui/IconButton.tsx";
-import {DeleteIcon} from "../../icons/deleteTodo.tsx";
-import {EditIcon} from "../../icons/editTodo.tsx";
-import {validateTextInput} from "../../validateTextInput.ts";
-
+import {Button, Checkbox, Form, Input, notification, Space} from "antd";
+import {CheckOutlined, CloseOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons";
+import {validationRules} from "../Validation/ValidationRules.ts";
 
 export interface TodoItemProps {
     todo: Todo
-    todos: Todo[]
-
     fetchTodos: () => void;
+    setIsEditing: (isEditing: boolean) => void;
 }
 
-export const TaskItem = ({ todo, todos, fetchTodos}: TodoItemProps) => {
+export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
     // Состояние для редактирования задач
-    const [EditingId, setEditingId] = useState<number | null>(null)
+    const [editingId, setEditingId] = useState<number | null>(null)
     const [editText, setEditText] = useState<string>('')
 
-    // Отправка формы
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>, id: number) => {
-        e.preventDefault();
+    const showCheckbox = useMemo(() => {
+        const isEditingThisTask = editingId != null && Number(editingId) === Number(todo.id)
+        return !isEditingThisTask
+    }, [editingId, todo.id])
 
-        const validation = validateTextInput(editText)
-        if(!validation.isValid){
-            setEditingId(null)
-            return
-        }
 
+
+    // Обработка отправки редактирования задачи
+    const handleEditTask = async (values: {title: string}) => {
         try {
+            if(editingId === null) return
 
-            const updateTodo: Todo = {
-                id: id,
-                title: editText,
-                created: '',
-                isDone: false,
+            const updateTodo = {
+                title: values.title
             }
 
-            await editTodos(id, updateTodo)
+
+            await editTodo(editingId, updateTodo)
+
+            notification.success({
+                message: 'Успешно',
+                description: 'Задача обновлена!',
+            })
+
             handleCancelEdit()
-            await fetchTodos()
+                await fetchTodos()
 
-        } catch (e) {
-            console.log('Ошибка отправки формы:', e)
+        } catch (error) {
+
+            notification.error({
+                message: 'Ошибка',
+                description: 'Не удалось сохранить задачу',
+            })
+
+        } finally {
+            setIsEditing(false)
         }
-
 
     }
 
@@ -54,96 +61,112 @@ export const TaskItem = ({ todo, todos, fetchTodos}: TodoItemProps) => {
     const handleCancelEdit = () => {
             setEditingId(null)
             setEditText('')
+            setIsEditing(false)
     }
 
     // Обработка удаления задачи
     const handleDeleteTask = async (id: number) => {
-
         try {
-            await deleteTodos(id)
+            await deleteTodo(id)
             await fetchTodos()
         } catch (error) {
-            console.error('Ошибка удаления задачи',error)
-            alert('Ошибка удаления задачи')
+            alert('Ошибка удаления задачи' + error)
         }
     }
 
     // Обработка изменения статуса задачи
-    const handleToggle = async (id: number) => {
+    const handleToggleEditTask = async (id: number) => {
         try {
-            const updateTodo = todos.find(todo => todo.id === id)
-            if(!updateTodo)return
 
             // Создаем todoRequest с измененным статусом
             const todoRequest = {
-                isDone: !updateTodo.isDone
+                isDone: !todo.isDone
             }
 
-            await editTodos(id, todoRequest)
+            await editTodo(id, todoRequest)
             await fetchTodos()
 
         } catch (error) {
-            console.error(error)
-            alert('Ошибка переключения')
+            alert('Ошибка переключения' + error)
         }
     }
 
     // Обработка начала редактирования названия задачи
-    const handleStartEdit = (id: number, title: string) => {
-        setEditText(title)
-        setEditingId(id)
+    const handleStartEdit = () => {
+        setEditText(todo.title)
+        setEditingId(todo.id)
+        setIsEditing(true)
+
     }
+
+
+    // Для редактирования формы
+    const [form] = Form.useForm()
 
     return (
         <div key={todo.id} className={styles.todo}>
             <div className={styles.item}>
-                <input
+                {showCheckbox && <Checkbox
                     type="checkbox"
                     checked={todo.isDone}
-                    onChange={() => handleToggle(todo.id)}
-                />
-                {EditingId === todo.id ? (
-                    <form onSubmit={(e) => handleSubmit(e, todo.id)}>
-                    <div className={styles.itemBtn}>
-                        <input
-                            type="text"
-                            value={editText}
-                            onChange={(e) => setEditText(e.target.value)}
-                            className={styles.input}
-                        />
-                        <div className={styles.itemBtn}>
-                            <IconButton
-                                type='submit'
-                                variant={'primary'}
-                            >
-                                ✓
-                            </IconButton>
-                            <IconButton
+                    onChange={() => handleToggleEditTask(todo.id)}
+                />}
+                {editingId === todo.id ? (
+                    <Form
+                        form={form}
+                        onFinish={handleEditTask}
+                        className={styles.editForm}
+                        initialValues={{ title: editText }}
+                    >
+                        <Space>
+                            <Form.Item
+                                name="title"
+                                rules={validationRules}>
+                                <Input
+                                    className={styles.input}
+                                    autoFocus
+                                />
+                            </Form.Item>
+                        </Space>
+
+
+                        <Space>
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                icon={<CheckOutlined />}
+                                size="middle"
+                            />
+                            <Button
+                                type="primary"
                                 onClick={handleCancelEdit}
-                                variant={'secondary'}
-                            >
-                                ✕
-                            </IconButton>
-                        </div>
-                    </div>
-                    </form>
+                                icon={<CloseOutlined/>}
+                                size="middle"
+                                danger={true}
+                            />
+                        </Space>
+                    </Form>
                 ) : (<div>{todo.title}</div>)}
             </div>
             <div className={styles.itemBtn}>
-                {EditingId !== todo.id && (
-                        <IconButton
-                            onClick={() => handleStartEdit(todo.id, todo.title)}
-                            variant={'primary'}
-                        >
-                            <EditIcon/>
-                        </IconButton>
+                {editingId !== todo.id && (
+                    <Space>
+                        <Button
+                            type="primary"
+                            onClick={() => handleStartEdit()}
+                            icon={<EditOutlined/>}
+                            size="large"
+                        />
+
+                        <Button
+                            type="primary"
+                            onClick={() => handleDeleteTask(todo.id)}
+                            icon={<DeleteOutlined/>}
+                            danger={true}
+                            size="large"
+                        />
+                    </Space>
                 )}
-                <IconButton
-                    onClick={() => handleDeleteTask(todo.id)}
-                    variant={'secondary'}
-                >
-                    <DeleteIcon/>
-                </IconButton>
             </div>
         </div>
     )

@@ -1,61 +1,42 @@
 import type {FilterType, MetaResponse, Todo, TodoInfo, TodoRequest} from "../type";
+import axios from "axios";
 
-const url = 'https://easydev.club/api/v1/todos';
 
-// получить список задач
-export async function getTodos(status: FilterType): Promise<MetaResponse<Todo, TodoInfo>> {
-    const response = await fetch(`${url}?filter=${status}`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json'
+const axiosInstance = axios.create({
+    baseURL: 'https://easydev.club/api/v1/todos',
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
+})
+
+
+export async function getTodo(status: FilterType): Promise<MetaResponse<Todo, TodoInfo>> {
+    const response = await axiosInstance.get('',{
+        params: {
+            filter: status
         }
     })
-    if(!response.ok) {
-    throw new Error(`Ошибка, статус: ${response.status}`);
-}
-return response.json();
+
+return response.data;
 }
 
-// добавить задачу
-export async function addTodos(todo: Partial<TodoRequest>) {
-    const response = await fetch(`${url}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(todo)
-    })
-    if(!response.ok){
-        throw new Error(`Failed app todo: ${response.status}`)
-    }
+
+export async function addTodo(todo: TodoRequest) {
+        const response = await axiosInstance.post(``, todo)
+        return response.data;
 }
 
-// сохранение задачи
-export async function editTodos(id: number, updateTodo: Partial<Todo>): Promise<Todo> {
-    const response = await fetch(`${url}/${id}`,{
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        }, body: JSON.stringify(updateTodo)
-    })
 
-    if(!response.ok){
-    throw new Error(`Ошибка редактирования:${response.status}`)
-}
-return response.json();
+export async function editTodo(id: number, updateTodo: Partial<Todo>): Promise<Todo> {
+        const response = await axiosInstance.put(`/${id}`, updateTodo,{})
+        return response.data;
 }
 
-// удаление задачи
-export async function deleteTodos(id: number) {
-    const response = await fetch(`${url}/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Accept': 'application/json'
-        }
-    })
-    if(!response.ok){
-        throw new Error(`Ошибка: ${response.status}`)
-    }
+
+export async function deleteTodo(id: number) {
+        const response = await axiosInstance.delete(`/${id}`, {})
+        return response.data;
 }
 
 

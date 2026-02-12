@@ -1,63 +1,55 @@
-import {type ChangeEvent, type FormEvent, useState} from "react";
-import {addTodos} from "../../api/api.ts";
+import {addTodo} from "../../api/api.ts";
 import styles from './AddNewTask.module.scss'
-import {validateTextInput} from "../../validateTextInput.ts";
-
+import {Button, Form, Input} from "antd";
+import {useCallback} from "react";
+import {validationRules} from "../Validation/ValidationRules.ts";
 
 export interface AddTaskProps {
     fetchTodos: () => void;
 }
 
+
+
 export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
-    //ошибка валидации
-    const [inputError, setInputError] = useState<string>('')
+    // Создаем экземпляр формы
+    const [form] = Form.useForm();
 
-    // Текст в поле ввода
-    const [textInInput, setTextInInput] = useState<string>('')
 
-    const handleSubmitAddTask = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        setInputError('')
-
-        const validation = validateTextInput(textInInput.trim())
-        if (!validation.isValid) {
-            setInputError(validation.errorMessage)
-            return
-        }
-
+    // Создание и добавление задачи
+    const handleAddTask = useCallback(async (value: {title: string}) => {
+        const title = value.title.trim()
         try {
-            await addTodos({title: textInInput, isDone: false})
+            await addTodo({title: title, isDone: false})
             await fetchTodos()
-            setTextInInput('')
+            form.resetFields()
         } catch (error) {
-            console.error('Ошибка добавления задачи', error)
-            alert('Ошибка добавления задачи')
+            alert('Ошибка добавления задачи' + error)
         }
-    }
-
-// Обработка изменения в input
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setTextInInput(e.target.value)
-    }
+    }, [fetchTodos, form]);
 
     return(
-        <div>
-            <form className={styles.form} onSubmit={handleSubmitAddTask}>
-                <input
-                    type="text"
-                    placeholder="Введите название задачи..."
-                    onChange={handleChange}
-                    value={textInInput}
-                    className={styles.input}
+        <>
+            <Form
+                form={form}
+                className={styles.form}
+                onFinish={handleAddTask}
+            >
+                <Form.Item
                     name="title"
-                />
-                <button
-                    className={styles.button}
-                >Добавить
-                </button>
-            </form>
-            {inputError && (<div className={styles.error}>{inputError}</div>)}
-        </div>
+                    rules={validationRules}
+                >
+                    <Input
+                        type="text"
+                        placeholder="Введите название задачи..."
+                        className={styles.input}
+                    />
+                </Form.Item>
+                <Form.Item>
+                    <Button type="primary" htmlType="submit">Добавить</Button>
+                </Form.Item>
+
+            </Form>
+        </>
 
     )
 }
