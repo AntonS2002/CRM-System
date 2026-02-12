@@ -18,10 +18,10 @@ const navigationMenuItems: MenuItem[] = [
         )},
 
     {
-        key: '/profile',
+        key: '/app/profile',
         label: (
             <NavLink
-                to={"/profile"}
+                to={"/app/profile"}
                 className={({isActive}) => (isActive ? 'active' : undefined)}
             >
                 Профиль
