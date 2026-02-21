@@ -11,8 +11,6 @@ export interface FilteredTaskProps {
 
 export const FilterButtons = ({filter, setFilter, count}: FilteredTaskProps) => {
 
-
-
     return(
             <div className={styles.container}>
                 <Segmented

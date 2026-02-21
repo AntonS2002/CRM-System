@@ -1,7 +1,7 @@
 import type {Rule} from "antd/es/form";
 
 const usernameRules = {
-    min: 1,
+    min: 2,
     max: 60,
 }
 
@@ -107,16 +107,12 @@ export const emailTextAuthRules: Rule[] = [
 
 export const phoneTextAuthRules: Rule[] = [
     {
-        required: false,
-
-    },
-    {
         max: 10,
         message: 'Введите 10 цифр номера',
     },
     {
-        pattern: /^\+7\d{10}$/,
-        message: 'Введите номер в формате: +79998887766'
+        pattern: /^\+?[0-9\s\-()]+$/,
+        message: 'Введите корректный номер телефона'
     }
 ]
 

@@ -9,6 +9,7 @@ import {SignupPage} from "./pages/SignupPage.tsx";
 import {LoginPage} from "./pages/LoginPage.tsx";
 import {Provider} from "react-redux";
 import {store} from "./store"
+import {Logout} from "./util/logout.ts";
 
 
 
@@ -31,9 +32,10 @@ const router = createBrowserRouter([
     children: [
       {index: true, element: <Navigate to="/app/todos" replace />},
       {path: "todos", element: <TodoListPage/>},
-      {path: "profile", element: <ProfilePage/>}
+      {path: "profile", element: <ProfilePage/>},
     ]
-  }
+  },
+  {path: "/logout", action: Logout}
 
 ])
 

@@ -23,7 +23,6 @@ export const SignupForm = () => {
         phoneNumber: string;}) => {
 
         try {
-
             const {confirmPassword, ...userData} = value
 
             const cleanedData = {
@@ -31,9 +30,8 @@ export const SignupForm = () => {
                 username: userData.username.trim(),
                 password: userData.password.trim(),
                 email: userData.email.trim().toLowerCase(),
-                phoneNumber: userData.phoneNumber.trim(),
+                phoneNumber: userData.phoneNumber?.trim() || '',
             }
-
 
             console.log("Отправляемые данные на сервер:", cleanedData);
             const data = await RegisterNewUser(cleanedData)
@@ -46,9 +44,9 @@ export const SignupForm = () => {
             form.resetFields();
 
         } catch (error: any) {
-            console.error("Ответ сервера (если есть):", error.response?.data); // ← Добавьте это
+            console.error("Ответ сервера (если есть):", error.response?.data);
             notification.error({
-                message: "Ошибка создания пользователя",
+                title: "Ошибка создания пользователя",
             })
 
         }
@@ -119,11 +117,7 @@ return (
             layout={'vertical'}
         >
             <Space.Compact block>
-                <Input
-                    style={{ width: '100%' }}
-                    addonBefore={'+7'}
-                    placeholder={'Введите номер'}
-                />
+                <Input/>
             </Space.Compact>
         </Form.Item>
 
