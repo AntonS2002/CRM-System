@@ -1,10 +1,10 @@
 import type {
     AuthData,
     FilterType,
-    MetaResponse, Profile, ProfileRequest,
+    MetaResponse, Profile, RefreshToken,
     Todo,
     TodoInfo,
-    TodoRequest,
+    TodoRequest, Token,
     UserRegistration
 } from "../type";
 import axios from "axios";
@@ -12,6 +12,7 @@ import {getAuthToken} from "../util/auth.ts";
 
 const axiosInstance = axios.create({
     baseURL: 'https://easydev.club/api/v1',
+    withCredentials: true,
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -67,22 +68,19 @@ export async function LoginNewUser(user: AuthData){
     return response.data;
 }
 
-export async function logout() {
+export async function LogoutProfile() {
     const repsonse = await axiosInstance.post('/user/logout');
     return repsonse.data
 }
 
-export async function refreshToken(refreshToken: string)  {
-    const response = await axiosInstance.post('/auth/refresh', refreshToken);
+export async function refreshToken(refreshToken: RefreshToken): Promise<Token>  {
+    const response = await axiosInstance.post('/auth/refresh', {
+        refreshToken: refreshToken
+    });
     return response.data;
 }
 
 export async function getProfileUser(): Promise<Profile>  {
     const response = await axiosInstance.get('/user/profile');
-    return response.data;
-}
-
-export async function updateUserProfile(value: ProfileRequest)  {
-    const response = await axiosInstance.put('/user/profile', value)
     return response.data;
 }

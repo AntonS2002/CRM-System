@@ -42,6 +42,11 @@ export interface RefreshToken {
     refreshToken: string;
 }
 
+export interface Token {
+    accessToken: string
+    refreshToken: string
+}
+
 export interface ProfileRequest {
     username: string;
     email: string;
@@ -54,11 +59,10 @@ export interface Profile {
     email: string;
     date: string;
     isBlocked: boolean;
-    roles: Role[];
+    roles: [];
     phoneNumber: string;
 }
 
-type Role = ADMIN | USER | MODERATOR
 
 
 
