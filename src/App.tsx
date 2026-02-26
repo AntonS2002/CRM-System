@@ -13,6 +13,7 @@ import {Logout} from "./util/logout.ts";
 
 
 
+
 const router = createBrowserRouter([
 
   {path: "/", element: <Navigate to="/auth/signup" replace />},
@@ -21,8 +22,8 @@ const router = createBrowserRouter([
     path: "auth",
     element: <AuthLayout/>,
     children: [
-      {path: "signup", element: <SignupPage/>},
-      {path: "login", element: <LoginPage/>}
+      {path: "signup", element: <SignupPage/>,},
+      {path: "login", element: <LoginPage/>},
     ]
   },
 

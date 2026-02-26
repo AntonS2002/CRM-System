@@ -9,8 +9,11 @@ import {
 } from "../Validation/FormAuthRules.ts";
 import {RegisterNewUser} from "../../api/api.ts";
 
+interface SignupFormProps {
+    onSuccess?: () => void;
+}
 
-export const SignupForm = () => {
+export const SignupForm = ({onSuccess}: SignupFormProps) => {
 
     const [form] = Form.useForm();
 
@@ -40,6 +43,8 @@ export const SignupForm = () => {
             notification.success({
                 message: "Пользователь создан",
             })
+
+            onSuccess?.();
 
             form.resetFields();
 
