@@ -1,7 +1,7 @@
 import type {
     AuthData,
     FilterType,
-    MetaResponse, Profile, RefreshToken,
+    MetaResponse, Profile,
     Todo,
     TodoInfo,
     TodoRequest, Token,
@@ -73,9 +73,9 @@ export async function LogoutProfile() {
     return repsonse.data
 }
 
-export async function refreshToken(refreshToken: RefreshToken): Promise<Token>  {
+export async function refreshToken(refreshTokenValue: string): Promise<Token>  {
     const response = await axiosInstance.post('/auth/refresh', {
-        refreshToken: refreshToken
+        refreshToken: refreshTokenValue
     });
     return response.data;
 }
@@ -84,3 +84,5 @@ export async function getProfileUser(): Promise<Profile>  {
     const response = await axiosInstance.get('/user/profile');
     return response.data;
 }
+
+

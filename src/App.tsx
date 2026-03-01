@@ -9,7 +9,8 @@ import {SignupPage} from "./pages/SignupPage.tsx";
 import {LoginPage} from "./pages/LoginPage.tsx";
 import {Provider} from "react-redux";
 import {store} from "./store"
-import {Logout} from "./util/logout.ts";
+import {Logout} from "./util/auth.ts";
+
 
 
 

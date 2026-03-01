@@ -1,9 +1,11 @@
 import {Button, Form, Input, notification} from "antd";
 import {useEffect} from "react";
-import {getProfileUser, LogoutProfile} from "../../api/api.ts";
+import {getProfileUser, LogoutProfile,} from "../../api/api.ts";
 import type {Profile} from "../../type";
-import {removeTokens} from "../../util/auth.ts";
+import {getAuthToken, removeTokens} from "../../util/auth.ts";
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
+
 
 
 
@@ -14,22 +16,40 @@ export const ProfileForm = () => {
     useEffect(() => {
         const LoadProfileData = async () => {
             try {
+                const token = getAuthToken()
+                if(!token) {
+                    await new Promise(resolve => setTimeout(resolve, 500))
 
+                    const tokenAfterWait = getAuthToken()
+                    if(!tokenAfterWait){
+                        console.log("не удалось получить токен доступа")
+                        notification.error({
+                            title: 'Не удалось получить токен доступа'
+                        })
+                        return
+                    }
+                }
+
+                console.log('📥 Загружаем профиль...');
                 const data: Profile = await getProfileUser()
+                console.log('✅ Профиль загружен:', data);
                 form.setFieldsValue({
                     username: data.username,
                     email: data.email,
                     phoneNumber: data.phoneNumber,
                 })
             } catch (error) {
-                notification.error({
-                    title: `Ошибка загрузки данных пользователя: ${error}`,
-                })
+                console.error('❌ Ошибка:', error);
+                if(axios.isAxiosError(error) && error.response?.status === 401) {
+                    notification.error({
+                        title: 'Ошибка авторизации',
+                        description: 'Пожалуйста войдите снова'
+                    })
+                }
             }
         }
-
         LoadProfileData()
-    }, [])
+    }, [form, navigate])
 
     const Logout = async () => {
             await LogoutProfile()

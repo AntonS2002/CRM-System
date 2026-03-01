@@ -1,7 +1,7 @@
 import type {Rule} from "antd/es/form";
 
 const usernameRules = {
-    min: 2,
+    min: 1,
     max: 60,
 }
 
@@ -14,12 +14,6 @@ const passwordRules = {
     min: 6,
     max: 60
 }
-
-const emailRules = {
-    min: 2,
-    max: 60
-}
-
 
 export const usernameTextAuthRules: Rule[] = [
     {
@@ -94,21 +88,13 @@ export const emailTextAuthRules: Rule[] = [
     {
         whitespace: true,
         message: 'Введите название задачи!'
-    },
-    {
-        min: emailRules.min,
-        message: "Минимум 2 символа"
-    },
-    {
-        max: emailRules.max,
-        message: `Максимум ${emailRules.max} символов`
     }
 ]
 
 export const phoneTextAuthRules: Rule[] = [
     {
-        max: 10,
-        message: 'Введите 10 цифр номера',
+        max: 12,
+        message: 'Введите 12 цифр номера',
     },
     {
         pattern: /^\+?[0-9\s\-()]+$/,

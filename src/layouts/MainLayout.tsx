@@ -5,52 +5,56 @@ import {Layout, notification} from "antd";
 import Sider from "antd/es/layout/Sider";
 import {Content} from "antd/es/layout/layout";
 import {getAuthToken, getRefreshToken, removeTokens, setAuthToken} from "../util/auth.ts";
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import {refreshToken} from "../api/api.ts";
-import type {Token} from "../type";
+
 
 
 
 export const MainLayout = () => {
 
-
+    const isRefreshing = useRef(false)
     const navigate = useNavigate()
     let isMounted = true;
+
     useEffect(() => {
         const validationAndRefreshToken = async () => {
+
+           if(isRefreshing.current) {
+               console.log('Уже обновляем токен, пропускаем...');
+               return;
+           }
+
+           isRefreshing.current = true;
+
             try {
                 const token = getAuthToken();
                 const refresh = getRefreshToken()
 
-                if(!token && !refresh){
-                    console.log('Нет токенов, редирект на логин')
-                    navigate('/auth/login', {replace: true})
+                if(!refresh) {
+                    navigate('/auth/login');
+                }
+
+                if(token){
                     return
                 }
 
-                if(refresh && !token) {
+                if(!token && refresh){
                     try {
-                        const response: Token = await refreshToken({refreshToken: refresh})
+                        const response = await refreshToken(refresh);
 
-                        if (response?.accessToken && isMounted) {
+                        if(response?.accessToken) {
                             setAuthToken(response.accessToken)
+                            console.log('Токен обновлен')
                         }
-
                     } catch (error) {
-
-                        if(isMounted) {
-                            removeTokens()
-
-                            notification.error({
-                                title: `Сессия истекла`,
-                                description: `Пожалуйста войдите снова`,
-                            })
-                            navigate('/auth/login', {replace: true})
-                        }
-                        return
+                        removeTokens()
+                        notification.error({
+                            title: 'Сессия истекла'
+                        })
+                        navigate('/auth/login');
                     }
                 }
-
         } catch(error) {
                 console.error('MainLayout: критическая ошибка:', error);
                 if(isMounted) {
@@ -59,6 +63,8 @@ export const MainLayout = () => {
                     })
                     navigate('/auth/login', {replace: true})
                 }
+            } finally {
+                isRefreshing.current = false;
             }
         }
         validationAndRefreshToken()

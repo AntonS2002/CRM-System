@@ -49,8 +49,7 @@ export const SignupPage = () => {
                 onOk={handleModalOk}
                 onCancel={handleModalCancel}
             >
-                <p>Нажмите ок чтобы пройти</p>
-                <Link to="/auth/login">Перейти на страницу авторизации</Link>
+                <p>Нажмите ок чтобы пройти на страницу <Link to="/auth/login">авторизации</Link></p>
             </Modal>
         </div>
     )

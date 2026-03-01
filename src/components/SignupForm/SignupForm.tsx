@@ -1,4 +1,4 @@
-import {Button, Form, Input, notification, Space} from "antd";
+import {Button, Form, Input, notification} from "antd";
 import styles from "./SignupForm.module.scss";
 import {Link} from "react-router-dom";
 import {
@@ -35,14 +35,7 @@ export const SignupForm = ({onSuccess}: SignupFormProps) => {
                 email: userData.email.trim().toLowerCase(),
                 phoneNumber: userData.phoneNumber?.trim() || '',
             }
-
-            console.log("Отправляемые данные на сервер:", cleanedData);
-            const data = await RegisterNewUser(cleanedData)
-            console.log("Ответ сервера:", data);
-
-            notification.success({
-                message: "Пользователь создан",
-            })
+            await RegisterNewUser(cleanedData)
 
             onSuccess?.();
 
@@ -112,7 +105,7 @@ return (
             name='email'
             rules={emailTextAuthRules}
         >
-            <Input placeholder={'Введите email'}/>
+            <Input placeholder={'example@mail.com'}/>
         </Form.Item>
 
         <Form.Item
@@ -121,9 +114,7 @@ return (
             rules={phoneTextAuthRules}
             layout={'vertical'}
         >
-            <Space.Compact block>
-                <Input/>
-            </Space.Compact>
+            <Input placeholder={'+79206785421'}/>
         </Form.Item>
 
         <Form.Item>

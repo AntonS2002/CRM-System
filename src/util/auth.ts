@@ -1,10 +1,11 @@
+import {redirect} from "react-router-dom";
 
-
-const ACCESS_TOKEN_KEY = 'accessToken'
 const REFRESH_TOKEN_KEY = 'refreshToken'
 
+let inMemoryAccessToken: string | null = null
+
 export const setAuthToken = (token: string) => {
-    localStorage.setItem(ACCESS_TOKEN_KEY, token)
+    inMemoryAccessToken = token
 }
 
 export const setRefreshToken = (token: string) => {
@@ -12,7 +13,7 @@ export const setRefreshToken = (token: string) => {
 }
 
 export const getAuthToken = () => {
-    return localStorage.getItem(ACCESS_TOKEN_KEY)
+    return inMemoryAccessToken
 }
 
 export const getRefreshToken = () => {
@@ -20,11 +21,16 @@ export const getRefreshToken = () => {
 }
 
 export const removeTokens = () => {
-    localStorage.removeItem(ACCESS_TOKEN_KEY)
+    inMemoryAccessToken = null
     localStorage.removeItem(REFRESH_TOKEN_KEY)
 }
 
 export const saveTokens = (accessToken: string, refreshToken: string) => {
     setAuthToken(accessToken)
     setRefreshToken(refreshToken)
+}
+
+export const Logout = () => {
+    removeTokens()
+    return redirect('/auth/signup')
 }
