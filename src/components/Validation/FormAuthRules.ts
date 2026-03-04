@@ -88,6 +88,10 @@ export const emailTextAuthRules: Rule[] = [
     {
         whitespace: true,
         message: 'Введите название задачи!'
+    },
+    {
+        type: 'email',
+        message: 'Введите корректный адрес'
     }
 ]
 

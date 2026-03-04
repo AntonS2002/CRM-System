@@ -15,6 +15,7 @@ import {Logout} from "./util/auth.ts";
 
 
 
+
 const router = createBrowserRouter([
 
   {path: "/", element: <Navigate to="/auth/signup" replace />},

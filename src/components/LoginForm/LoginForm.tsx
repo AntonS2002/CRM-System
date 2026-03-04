@@ -4,27 +4,27 @@ import {Link, useNavigate} from "react-router-dom";
 import {
     loginTextAuthRules,
     passwordTextAuthRules,
-
 } from "../Validation/FormAuthRules.ts";
 import {LoginNewUser} from "../../api/api.ts";
-import {setAuthToken, setRefreshToken} from "../../util/auth.ts";
+import {tokenManager} from "../../util/auth.ts";
+import {useDispatch} from "react-redux";
+import {setAuth} from "../../store/slices/authSlice.ts";
 
 
 export const LoginForm = () => {
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
 
     const authUser = async (value: { login: string, password: string, }) => {
         try {
             const response = await LoginNewUser(value);
 
-            if(response.accessToken) {
-                setAuthToken(response.accessToken);
-            }
-            if(response.refreshToken) {
-                setRefreshToken(response.refreshToken);
-            }
+            localStorage.setItem('refreshToken', response.refreshToken);
+            tokenManager.setToken(response.accessToken);
 
+            dispatch(setAuth(true))
             navigate('/app/todos', {replace: true});
 
             notification.success({
