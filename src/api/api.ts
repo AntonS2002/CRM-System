@@ -9,6 +9,7 @@ import type {
 } from "../type";
 import axios from "axios";
 import {tokenManager} from "../util/auth.ts";
+import {refreshRequest} from "./auth.api.ts";
 
 const axiosInstance = axios.create({
     baseURL: 'https://easydev.club/api/v1',
@@ -22,48 +23,33 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use((config) => {
     const token = tokenManager.getToken();
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+
+    if(token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
 });
 
-// Обрабатываем 401 ошибку
 axiosInstance.interceptors.response.use(
-    res => res,
+    (response) => response,
     async (error) => {
-        const originalRequest = error.config;
+        const originalRequest = error.config
 
-        if (!error.response) return Promise.reject(error);
-        if (originalRequest.url.includes("/auth/refresh")) return Promise.reject(error);
-
-        if (error.response.status === 401 && !originalRequest._retry) {
+        if(error.response?.status === 401 && originalRequest._retry) {
             originalRequest._retry = true;
 
-            const refreshTokenValue = localStorage.getItem("refreshToken");
-            if (!refreshTokenValue) {
-                tokenManager.clearToken();
-                window.location.href = "/auth/login";
-                return Promise.reject(new Error("No refresh token"));
-            }
-
             try {
-                const response = await axios.post(
-                    "https://easydev.club/api/v1/auth/refresh",
-                    { refreshToken: refreshTokenValue }
-                );
-                tokenManager.setToken(response.data.accessToken);
-                originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
-                return axiosInstance(originalRequest);
-            } catch (err) {
-                tokenManager.clearToken();
-                localStorage.removeItem("refreshToken");
-                window.location.href = "/auth/login";
-                return Promise.reject(err);
+
+                const newToken = await refreshRequest()
+                originalRequest.headers.Authorization = `Bearer ${newToken}`
+                return axiosInstance(originalRequest)
+
+            } catch (error) {
+                return Promise.reject(error);
             }
         }
-
-        return Promise.reject(error);
     }
-);
+)
 
 export async function getTodo(status: FilterType): Promise<MetaResponse<Todo, TodoInfo>> {
     const response = await axiosInstance.get('/todos',{

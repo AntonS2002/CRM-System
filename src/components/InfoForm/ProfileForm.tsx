@@ -1,39 +1,33 @@
-import {Button, Form, Input, notification} from "antd";
-import {useEffect} from "react";
+import {Button, notification, Table} from "antd";
+import {useEffect, useState} from "react";
 import {getProfileUser, LogoutProfile} from "../../api/api.ts";
 import {tokenManager} from "../../util/auth.ts";
 import {useNavigate} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {setAuth} from "../../store/slices/authSlice.ts";
-import type {RootState} from "../../store";
+import type {ProfileRequest} from "../../type";
+import styles from '../../components/InfoForm/InfoForm.module.scss'
+
+
 
 export const ProfileForm = () => {
 
     const dispatch = useDispatch();
-    const {isAuth} = useSelector((state: RootState)=> state.auth);
     const navigate = useNavigate();
-    const [form] = Form.useForm();
-
+    const [profileData, setProfileData] = useState<ProfileRequest[]>([])
 
     useEffect(() => {
-        const token = tokenManager.getToken();
-        if(token) {
-            tokenManager.setToken(token);
-            dispatch(setAuth(true));
-        }
-
-        if(!isAuth) return;
-
-        if (!tokenManager.getToken()) return;
 
         const loadProfile = async () => {
             try {
                 const response = await getProfileUser();
-                form.setFieldsValue({
+                setProfileData([
+                    {
                     username: response.username,
                     email: response.email,
                     phoneNumber: response.phoneNumber
-                });
+                 }
+                ]);
             } catch (err) {
                 console.error(err);
             }
@@ -51,32 +45,34 @@ export const ProfileForm = () => {
         notification.info({ title: "Вы вышли из системы" });
     };
 
-    return (
-       <div>
-            <Form form={form} size={'large'} onFinish={Logout}>
-                <Form.Item
-                    label="Имя пользователя"
-                    name="username"
-                >
-                    <Input disabled/>
-                </Form.Item>
-                <Form.Item
-                    label="Почтовый адрес"
-                    name="email"
-                >
-                    <Input disabled/>
-                </Form.Item>
-                <Form.Item
-                    label="Телефон"
-                    name="phoneNumber"
-                >
-                    <Input disabled/>
-                </Form.Item>
+    const columns = [
+        {
+            title: "username",
+            dataIndex: "username",
+            key: "username",
+        },
+        {
+            title: "email",
+            dataIndex: "email",
+            key: "email",
+        },
+        {
+            title: "phoneNumber",
+            dataIndex: "phoneNumber",
+            key: "phoneNumber",
+        },
+    ];
 
-                <Form.Item>
-                    <Button danger={true} type={'primary'} htmlType="submit">Logout</Button>
-                </Form.Item>
-            </Form>
-        </div>
-    )
+        return (
+            <div className={styles.container}>
+                <Table
+                    columns={columns}
+                    dataSource={profileData}
+                    pagination={false}
+                    bordered
+                />
+                <Button danger type={"primary"} onClick={Logout}>Logout</Button>
+            </div>
+
+        );
 }

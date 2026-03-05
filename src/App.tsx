@@ -10,36 +10,31 @@ import {LoginPage} from "./pages/LoginPage.tsx";
 import {Provider} from "react-redux";
 import {store} from "./store"
 import {Logout} from "./util/auth.ts";
-
-
-
-
-
+import {initAuth} from "./util/initAuth.ts";
 
 const router = createBrowserRouter([
+            {path: "/", element: <Navigate to="/auth/signup" replace />},
 
-  {path: "/", element: <Navigate to="/auth/signup" replace />},
+            {
+                path: "auth",
+                element: <AuthLayout/>,
+                children: [
+                    {path: "signup", element: <SignupPage/>,},
+                    {path: "login", element: <LoginPage/>},
+                ]
+            },
 
-  {
-    path: "auth",
-    element: <AuthLayout/>,
-    children: [
-      {path: "signup", element: <SignupPage/>,},
-      {path: "login", element: <LoginPage/>},
-    ]
-  },
-
-  {
-    path: "app",
-    element: <MainLayout/>,
-    children: [
-      {index: true, element: <Navigate to="/app/todos" replace />},
-      {path: "todos", element: <TodoListPage/>},
-      {path: "profile", element: <ProfilePage/>},
-    ]
-  },
-  {path: "/logout", action: Logout}
-
+            {
+                path: "app",
+                element: <MainLayout/>,
+                loader: initAuth,
+                children: [
+                    {index: true, element: <Navigate to="/app/todos" replace />},
+                    {path: "todos", element: <TodoListPage/>},
+                    {path: "profile", element: <ProfilePage/>, hydrateFallbackElement: <div>Loading...</div>,},
+                ]
+            },
+            {path: "/logout", action: Logout}
 ])
 
 function App() {
