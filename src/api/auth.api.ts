@@ -1,13 +1,21 @@
 import {refreshToken} from "./api.ts";
 import {tokenManager} from "../util/auth.ts";
 
-export const refreshRequest = async () => {
-    const refsreshTokenValue = localStorage.getItem('refreshToken');
+import { setCredentials} from "../store/slices/authSlice.ts";
+import {store} from "../store";
 
-    const response = await refreshToken(refsreshTokenValue)
+
+
+export const refreshRequest = async () => {
+    const refreshTokenValue = localStorage.getItem('refreshToken');
+
+    const response = await refreshToken(refreshTokenValue)
 
     tokenManager.setToken(response.accessToken)
     localStorage.setItem('refreshToken', response.refreshToken)
+
+    store.dispatch(setCredentials({ accessToken: response.accessToken }))
+
 
     return response.accessToken
 }

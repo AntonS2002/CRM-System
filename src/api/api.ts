@@ -10,6 +10,9 @@ import type {
 import axios from "axios";
 import {tokenManager} from "../util/auth.ts";
 import {refreshRequest} from "./auth.api.ts";
+import {logout} from "../store/slices/authSlice.ts";
+import {store} from "../store";
+
 
 const axiosInstance = axios.create({
     baseURL: 'https://easydev.club/api/v1',
@@ -39,12 +42,12 @@ axiosInstance.interceptors.response.use(
             originalRequest._retry = true;
 
             try {
-
                 const newToken = await refreshRequest()
                 originalRequest.headers.Authorization = `Bearer ${newToken}`
                 return axiosInstance(originalRequest)
-
             } catch (error) {
+                tokenManager.clearToken()
+                store.dispatch(logout())
                 return Promise.reject(error);
             }
         }
@@ -81,7 +84,7 @@ export async function RegisterNewUser(user: UserRegistration){
     return response.data;
 }
 
-export async function LoginNewUser(user: AuthData){
+export async function LoginUser(user: AuthData){
     const response =await axiosInstance.post('auth/signin', user, {})
     return response.data;
 }

@@ -4,9 +4,9 @@ import {getProfileUser, LogoutProfile} from "../../api/api.ts";
 import {tokenManager} from "../../util/auth.ts";
 import {useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
-import {setAuth} from "../../store/slices/authSlice.ts";
 import type {ProfileRequest} from "../../type";
 import styles from '../../components/InfoForm/InfoForm.module.scss'
+import {logout} from "../../store/slices/authSlice.ts";
 
 
 
@@ -38,7 +38,7 @@ export const ProfileForm = () => {
 
     const Logout = async () => {
         await LogoutProfile();
-        dispatch(setAuth(false));
+        dispatch(logout());
         tokenManager.clearToken();
         localStorage.clear();
         navigate("/auth/login");
@@ -47,7 +47,7 @@ export const ProfileForm = () => {
 
     const columns = [
         {
-            title: "username",
+            title: "Имя пользователя",
             dataIndex: "username",
             key: "username",
         },
@@ -57,7 +57,7 @@ export const ProfileForm = () => {
             key: "email",
         },
         {
-            title: "phoneNumber",
+            title: "Номер телефона",
             dataIndex: "phoneNumber",
             key: "phoneNumber",
         },

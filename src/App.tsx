@@ -11,6 +11,7 @@ import {Provider} from "react-redux";
 import {store} from "./store"
 import {Logout} from "./util/auth.ts";
 import {initAuth} from "./util/initAuth.ts";
+import {ProtectedRoute} from "./components/ProtectedRoute.tsx";
 
 const router = createBrowserRouter([
             {path: "/", element: <Navigate to="/auth/signup" replace />},
@@ -26,7 +27,10 @@ const router = createBrowserRouter([
 
             {
                 path: "app",
-                element: <MainLayout/>,
+                element:
+                    <ProtectedRoute>
+                        <MainLayout/>
+                    </ProtectedRoute>,
                 loader: initAuth,
                 children: [
                     {index: true, element: <Navigate to="/app/todos" replace />},

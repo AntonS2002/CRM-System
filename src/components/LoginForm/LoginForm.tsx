@@ -5,10 +5,10 @@ import {
     loginTextAuthRules,
     passwordTextAuthRules,
 } from "../Validation/FormAuthRules.ts";
-import {LoginNewUser} from "../../api/api.ts";
+import {LoginUser} from "../../api/api.ts";
 import {tokenManager} from "../../util/auth.ts";
 import {useDispatch} from "react-redux";
-import {setAuth} from "../../store/slices/authSlice.ts";
+import {setCredentials} from "../../store/slices/authSlice.ts";
 
 
 export const LoginForm = () => {
@@ -19,12 +19,12 @@ export const LoginForm = () => {
 
     const authUser = async (value: { login: string, password: string, }) => {
         try {
-            const response = await LoginNewUser(value);
+            const response = await LoginUser(value);
 
             localStorage.setItem('refreshToken', response.refreshToken);
             tokenManager.setToken(response.accessToken);
 
-            dispatch(setAuth(true))
+            dispatch(setCredentials(response.accessToken))
             navigate('/app/todos', {replace: true});
 
             notification.success({
