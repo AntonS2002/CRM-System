@@ -27,6 +27,8 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use((config) => {
     const token = tokenManager.getToken();
 
+
+
     if(token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
@@ -103,6 +105,11 @@ export async function refreshToken(refreshTokenValue: string | null): Promise<To
 
 export async function getProfileUser(): Promise<Profile>  {
     const response = await axiosInstance.get('/user/profile');
+    return response.data;
+}
+
+export async function getUsers() {
+    const response = await axiosInstance.get('/admin/users')
     return response.data;
 }
 

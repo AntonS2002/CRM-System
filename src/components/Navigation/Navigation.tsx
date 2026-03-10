@@ -27,6 +27,17 @@ const navigationMenuItems: MenuItem[] = [
                 Профиль
             </NavLink>
         ) },
+    {
+        key: '/app/users',
+        label: (
+            <NavLink
+                to={'/app/users'}
+                className={({isActive}) => (isActive ? 'active' : undefined)}
+            >
+                Пользователи
+            </NavLink>
+        )
+    }
 ]
 
 export const Navigation = () => {
