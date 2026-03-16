@@ -4,7 +4,7 @@ import type {User} from "../../type";
 import {getUsers} from "../../api/api.ts";
 import type {ColumnsType} from "antd/es/table";
 
-type TableUser = Pick<User, 'username' | 'email' | 'date'>
+type TableUser = Pick<User, 'username' | 'email' | 'date' | 'isBlocked' | 'roles' | 'phoneNumber'>
 
 export const TableUsers: React.FC = () => {
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -25,8 +25,36 @@ export const TableUsers: React.FC = () => {
         {
             title: 'Дата регистрации',
             dataIndex: 'date',
-            key: 'date'
+            key: 'date',
+            render: (date: string) => date ? new Date(date).toLocaleString('ru-RU', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+            }) : '-'
         },
+        {
+            title: 'Роли',
+            dataIndex: 'roles',
+            key: 'roles',
+            render: (roles: string[]) => {
+                if(Array.isArray(roles)){
+                    return roles.join(', ')
+                }
+                return roles || '-'
+            }
+        },
+        {
+            title: 'Номер телефона',
+            dataIndex: 'phoneNumber',
+            key: 'phoneNumber',
+        },
+        {
+            title: 'Статус блокировки',
+            dataIndex: 'isBlocked',
+            key: 'isBlocked',
+        }
     ];
 
     useEffect(() => {
@@ -38,6 +66,9 @@ export const TableUsers: React.FC = () => {
                         username: user.username,
                         email: user.email,
                         date: user.date,
+                        isBlocked: user.isBlocked,
+                        phoneNumber: user.phoneNumber,
+                        roles: user.roles,
                     }))
 
                     setDataUsers(formattedData)
