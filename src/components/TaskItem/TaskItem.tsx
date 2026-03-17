@@ -1,6 +1,6 @@
 import {useMemo, useState} from "react";
 import type {Todo} from "../../type";
-import {deleteTodo, editTodo} from "../../api/api.ts";
+import {deleteTodo, editTodo} from "../../api/apiTasks.ts";
 import styles from './TaskItem.module.scss'
 import {Button, Checkbox, Form, Input, notification, Space} from "antd";
 import {CheckOutlined, CloseOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons";

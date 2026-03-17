@@ -1,8 +1,8 @@
-import {refreshToken} from "../api/api.ts";
 import {store} from "../store";
 import {logout, setCredentials} from "../store/slices/authSlice.ts";
 import {notification} from "antd";
 import {tokenManager} from "./auth.ts";
+import {refreshToken} from "../api/apiAuth.ts";
 
 
 export const initAuth = async () => {
@@ -14,7 +14,7 @@ export const initAuth = async () => {
         tokenManager.setToken(data.accessToken);
         localStorage.setItem('refreshToken', data.refreshToken)
 
-        store.dispatch(setCredentials({accessToken: data.accessToken}))
+        store.dispatch(setCredentials())
 
         return null
     } catch (error) {

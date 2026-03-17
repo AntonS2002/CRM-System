@@ -3,7 +3,7 @@ import type {FilterType, Todo, TodoInfo} from "../type";
 import {TasksList} from "../components/TasksList/TasksList.tsx";
 import {FilterButtons} from "../components/TasksFilter/TasksFilter.tsx";
 import {AddNewTask} from "../components/AddNewTask/AddNewTask.tsx";
-import {getTodo} from "../api/api.ts";
+import {getTodo} from "../api/apiTasks.ts";
 import styles from './TodoListPage.module.scss'
 import {notification} from "antd";
 
