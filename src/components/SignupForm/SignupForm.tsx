@@ -7,7 +7,8 @@ import {
     passwordTextAuthRules, phoneTextAuthRules,
     usernameTextAuthRules
 } from "../Validation/FormAuthRules.ts";
-import {RegisterNewUser} from "../../api/api.ts";
+import {registerNewUser} from "../../api/apiAuth.ts";
+
 
 interface SignupFormProps {
     onSuccess?: () => void;
@@ -35,7 +36,7 @@ export const SignupForm = ({onSuccess}: SignupFormProps) => {
                 email: userData.email.trim().toLowerCase(),
                 phoneNumber: userData.phoneNumber?.trim() || '',
             }
-            await RegisterNewUser(cleanedData)
+            await registerNewUser(cleanedData)
 
             onSuccess?.();
 

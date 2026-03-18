@@ -1,4 +1,4 @@
-import {addTodo} from "../../api/api.ts";
+import {addTodo} from "../../api/apiTasks.ts";
 import styles from './AddNewTask.module.scss'
 import {Button, Form, Input} from "antd";
 import {useCallback} from "react";

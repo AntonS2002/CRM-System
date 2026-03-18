@@ -1,13 +1,9 @@
 import {useSelector} from "react-redux";
 import type {RootState} from "../store";
 import {Navigate} from "react-router-dom";
+import type {PropsWithChildren} from "react";
 
-
-interface ProtectedRouteProps {
-    children: React.ReactNode;
-}
-
-export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+export const ProtectedRoute = ({ children }: PropsWithChildren) => {
     const isAuth = useSelector((state: RootState) => state.auth.isAuth);
 
     if (!isAuth) {

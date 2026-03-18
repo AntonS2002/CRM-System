@@ -1,6 +1,3 @@
-import styles from "../pages/SignupPage.module.scss"
-import MainPicture from "../picture/illustration.jpg";
-import MainPicture2 from "../picture/Group.jpg";
 import {SignupForm} from "../components/SignupForm/SignupForm.tsx";
 import {useState} from "react";
 import {Modal} from "antd";
@@ -11,7 +8,7 @@ export const SignupPage = () => {
 
     const navigate = useNavigate();
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
     const handleRegistrationSuccess = () => {
         setIsModalOpen(true);
@@ -28,21 +25,10 @@ export const SignupPage = () => {
     }
 
     return (
-        <div className={styles.container}>
-            <div className={styles.containerImg}>
-                <img
-                    src={MainPicture}
-                    alt="123"
-                    className={styles.img}
-                />
-            </div>
-            <div className={styles.containerImgIc}>
-                <img src={MainPicture2} alt="123"/>
-            </div>
-            <div className={styles.containerForm}>
-                <h1>Регистрация пользователя</h1>
-                <SignupForm onSuccess={handleRegistrationSuccess}/>
-            </div>
+        <>
+            <h1>Регистрация пользователя</h1>
+            <SignupForm onSuccess={handleRegistrationSuccess}/>
+
             <Modal
                 title="Регистрация успешна!"
                 open={isModalOpen}
@@ -51,6 +37,8 @@ export const SignupPage = () => {
             >
                 <p>Нажмите ок чтобы пройти на страницу <Link to="/auth/login">авторизации</Link></p>
             </Modal>
-        </div>
+        </>
+
+
     )
 }

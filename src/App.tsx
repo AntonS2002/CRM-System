@@ -9,7 +9,7 @@ import {SignupPage} from "./pages/SignupPage.tsx";
 import {LoginPage} from "./pages/LoginPage.tsx";
 import {Provider} from "react-redux";
 import {store} from "./store"
-import {Logout} from "./util/auth.ts";
+import {logout} from "./util/auth.ts";
 import {initAuth} from "./util/initAuth.ts";
 import {ProtectedRoute} from "./components/ProtectedRoute.tsx";
 import {UsersPage} from "./pages/UsersPage.tsx";
@@ -40,7 +40,7 @@ const router = createBrowserRouter([
                     {path: "users", element: <UsersPage/>}
                 ]
             },
-            {path: "/logout", action: Logout}
+            {path: "/logout", action: logout}
 ])
 
 function App() {
