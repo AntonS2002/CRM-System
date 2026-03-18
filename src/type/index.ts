@@ -16,13 +16,8 @@ export interface TodoInfo {
     inWork: number
 }
 
-export interface MetaResponse<T, N> {
-    data: T[]
-    info?: N
-    meta: {
-        totalAmount: number
-    }
-}
+
+
 export type FilterType = 'all' | 'completed' | 'inWork';
 
 export interface UserRegistration {
@@ -97,6 +92,17 @@ export interface UserRequest{
     username?: string;
     email?: string;
     phoneNumber?: string;
+}
+
+// Интерфейс метаинформации
+
+export interface MetaResponse<T> {
+    data: T[]
+    meta: {
+        totalAmount: number;
+        sortBy: string;
+        sortOrder: 'asc' | 'desc';
+    }
 }
 
 enum Roles [

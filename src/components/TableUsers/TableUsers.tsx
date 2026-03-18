@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Flex, notification, Table} from 'antd';
-import type {MetaResponse, Profile, Todo, User} from "../../type";
+import type {User} from "../../type";
 import type {ColumnsType} from "antd/es/table";
-import {getProfileUser} from "../../api/apiAuth.ts";
+import {getUsers} from "../../api/apiAuth.ts";
 
 type TableUser = Pick<User, 'username' | 'email' | 'date' | 'isBlocked' | 'roles' | 'phoneNumber'>
 
@@ -60,7 +60,7 @@ export const TableUsers: React.FC = () => {
     useEffect(() => {
         const LoadDataUsers = async () => {
             try {
-                const response: MetaResponse<Profile, Todo> = await getProfileUser()
+                const response = await getUsers()
 
                     const formattedData: TableUser[] = response.data.map(user => ({
                         username: user.username,
@@ -85,7 +85,6 @@ LoadDataUsers()
     },[])
 
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-        console.log('selectedRowKeys changed: ', newSelectedRowKeys);
         setSelectedRowKeys(newSelectedRowKeys);
     };
 

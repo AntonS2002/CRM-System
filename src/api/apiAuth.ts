@@ -1,6 +1,5 @@
-import type {AuthData, MetaResponse, Profile, Todo, Token, UserRegistration} from "../type";
+import type {AuthData, MetaResponse, Profile, Token, User, UserRegistration} from "../type";
 import {tokenManager} from "../util/auth.ts";
-
 import {store} from "../store";
 import {logout} from "../store/slices/authSlice.ts";
 import {axiosInstance} from "./apiInstance.ts";
@@ -60,6 +59,11 @@ export async function refreshToken(refreshTokenValue: string | null)  {
 }
 
 export async function getProfileUser() {
-    const response = await axiosInstance.get<MetaResponse<Profile, Todo>>('/user/profile');
+    const response = await axiosInstance.get<User>('/user/profile');
+    return response.data;
+}
+
+export async function getUsers() {
+    const response = await axiosInstance.get<MetaResponse<Profile>>('/admin/users');
     return response.data;
 }
