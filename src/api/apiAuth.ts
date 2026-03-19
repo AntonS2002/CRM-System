@@ -67,3 +67,8 @@ export async function getUsers() {
     const response = await axiosInstance.get<MetaResponse<Profile>>('/admin/users');
     return response.data;
 }
+
+export async function deleteUser(id: number) {
+    const response = await axiosInstance.delete(`/admin/users/${id}`)
+    return response.data;
+}
