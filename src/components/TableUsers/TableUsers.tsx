@@ -1,13 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {Avatar, notification, Table, Flex, Button, Dropdown, type MenuProps, Modal} from 'antd';
-import type {User} from "../../type";
+import {Avatar, notification, Table, Flex, Button, Dropdown, type MenuProps, Modal, Drawer, Space, Select} from 'antd';
+import {Roles, type User} from "../../type";
 import type {ColumnsType} from "antd/es/table";
-
 import {DeleteOutlined, UserOutlined, SafetyCertificateOutlined, MoreOutlined, PoweroffOutlined } from '@ant-design/icons';
 import {blockUser, deleteUser, getUsers, unblockUser} from "../../api/apiTableUsers.ts";
-import {useDispatch, useSelector} from "react-redux";
 import {useAppDispatch, useAppSelector} from "../../store/hooks.ts";
-import useApp from "antd/es/app/useApp";
+import styles from '../../components/TableUsers/TableUsers.module.scss'
 
 
 
@@ -18,14 +16,20 @@ type TableUser = Pick<User, 'username' | 'email' | 'date' | 'isBlocked' | 'roles
 export const TableUsers: React.FC = () => {
 
     const dispatch = useAppDispatch();
-    const userRoles = useAppSelector(state => state.auth.roles)
+    const auth = useAppSelector(state => state.auth)
+    const userRoles = auth.roles
 
-    const isAdmin = userRoles.includes('admin')
-    const isModerator = userRoles.includes('moderator')
+    const isAdmin = userRoles.includes(Roles.ADMIN)
+    const isModerator = userRoles.includes(Roles.MODERATOR)
+
 
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
     const [dataUsers, setDataUsers] = useState<TableUser[]>([]);
+
+    const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+
+    const [selectedRoles, setSelectedRoles] = useState<Roles[] | null>([]);
 
     const loadDataUsers = async () => {
         try {
@@ -38,7 +42,7 @@ export const TableUsers: React.FC = () => {
                 date: user.date,
                 isBlocked: user.isBlocked,
                 phoneNumber: user.phoneNumber,
-                roles: user.roles,
+                roles: user.roles
             }))
 
             setDataUsers(formattedData)
@@ -87,6 +91,27 @@ export const TableUsers: React.FC = () => {
         }
     }
 
+
+    const handleOpenDrawer = (user: TableUser) => {
+        setDrawerOpen(true)
+        setSelectedRoles(user.roles)
+    }
+
+    const handleCloseDrawer = () => {
+        setDrawerOpen(false)
+        setSelectedRoles(null)
+    }
+
+    const handleSaveRoles = async () => {
+        try {
+
+        } catch (error) {
+            notification.error({
+                title: 'Ошибка обновления ролей'
+            })
+        }
+    }
+
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
         setSelectedRowKeys(newSelectedRowKeys);
     };
@@ -129,7 +154,7 @@ export const TableUsers: React.FC = () => {
             title: 'Роли',
             dataIndex: 'roles',
             key: 'roles',
-            render: (roles: string[]) => {
+            render: (roles: Roles[]) => {
                 if (Array.isArray(roles)) {
                     return roles.join(', ')
                 }
@@ -168,7 +193,8 @@ export const TableUsers: React.FC = () => {
                     {
                         key: 2,
                         label: 'Управление ролями',
-                        icon: <SafetyCertificateOutlined/>
+                        icon: <SafetyCertificateOutlined/>,
+                        onClick: () => {handleOpenDrawer(profile)}
                     },
                     {
                         key: 3,
@@ -204,17 +230,57 @@ export const TableUsers: React.FC = () => {
             },
         }
     ]
+
+    const roleOption = [
+        {label: 'ADMIN', value: Roles.ADMIN},
+        {label: 'MODERATOR', value: Roles.MODERATOR},
+        {label: 'USER', value: Roles.USER},
+    ]
+
     return (
-        <Flex gap="medium" vertical>
-            <Table
-                rowKey={'username'}
-                rowSelection={rowSelection}
-                columns={columns}
-                dataSource={dataUsers}
-                pagination={{
-                    pageSize: 20,
-                }}
-            />
-        </Flex>
+        <>
+            <Flex gap="medium" vertical>
+                <Table
+                    rowKey={'username'}
+                    rowSelection={rowSelection}
+                    columns={columns}
+                    dataSource={dataUsers}
+                    pagination={{
+                        pageSize: 20,
+                    }}
+                />
+            </Flex>
+
+            <Drawer
+                title='Управленеи ролями пользователя'
+                placement="right"
+                size='large'
+                onClose={handleCloseDrawer}
+                open={drawerOpen}
+                footer={
+                    <div className={styles.button}>
+                        <Button type="primary" onClick={handleSaveRoles}>
+                            Сохранить
+                        </Button>
+                        <Button onClick={handleCloseDrawer}>Cancel</Button>
+                    </div>
+                }
+            >
+
+                <Select
+                    mode="multiple"
+                    value={selectedRoles}
+                    size={'large'}
+                    onChange={(value) => setSelectedRoles(value)}
+                    options={roleOption}
+                    placeholder='Выберите поля'
+                    allowClear
+                    style={{width:'400px'}}
+                />
+            </Drawer>
+        </>
+
+
+
     )
 }

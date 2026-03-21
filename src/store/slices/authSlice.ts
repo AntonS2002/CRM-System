@@ -1,10 +1,12 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
+import type {Roles} from "../../type";
 
 
 
 export interface AuthState {
+    includes(arg0: string): unknown;
     isAuth: boolean;
-    roles: string[];
+    roles: Roles[];
 }
 
 const initialState: AuthState = {
@@ -25,7 +27,7 @@ export const authSlice = createSlice({
             state.isAuth = false;
         },
 
-        setRoles: (state, action: PayloadAction<string[]>) => {
+        setRoles: (state, action: PayloadAction<Roles[]>) => {
             state.roles = action.payload;
         }
 
