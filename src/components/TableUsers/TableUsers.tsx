@@ -1,70 +1,106 @@
 import React, {useEffect, useState} from 'react';
-import {Avatar, Button, Dropdown, Flex, type MenuProps, message, notification, Table} from 'antd';
+import {Avatar, notification, Table, Flex, Button, Dropdown, type MenuProps, Modal} from 'antd';
 import type {User} from "../../type";
 import type {ColumnsType} from "antd/es/table";
-import {getUsers} from "../../api/apiAuth.ts";
 
-import styles from '../../components/TableUsers/TableUsers.module.scss'
-import {DeleteOutlined, EditOutlined, StopOutlined, UserOutlined} from '@ant-design/icons';
-import { EllipsisOutlined } from '@ant-design/icons';
+import {DeleteOutlined, UserOutlined, SafetyCertificateOutlined, MoreOutlined, PoweroffOutlined } from '@ant-design/icons';
+import {blockUser, deleteUser, getUsers, unblockUser} from "../../api/apiTableUsers.ts";
+import {useDispatch, useSelector} from "react-redux";
+import {useAppDispatch, useAppSelector} from "../../store/hooks.ts";
+import useApp from "antd/es/app/useApp";
 
 
 
-type TableUser = Pick<User, 'username' | 'email' | 'date' | 'isBlocked' | 'roles' | 'phoneNumber'>
 
+type TableUser = Pick<User, 'username' | 'email' | 'date' | 'isBlocked' | 'roles' | 'phoneNumber' | 'id'>
 
 
 export const TableUsers: React.FC = () => {
+
+    const dispatch = useAppDispatch();
+    const userRoles = useAppSelector(state => state.auth.roles)
+
+    const isAdmin = userRoles.includes('admin')
+    const isModerator = userRoles.includes('moderator')
 
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
     const [dataUsers, setDataUsers] = useState<TableUser[]>([]);
 
-    const handleMenuClick: MenuProps['onClick'] = (e) => {
-        message.info('Click on menu item.');
-        console.log('click', e);
-    };
+    const loadDataUsers = async () => {
+        try {
+            const response = await getUsers()
 
-    const showDeleteConfirm = () => {
+            const formattedData: TableUser[] = response.data.map(user => ({
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                date: user.date,
+                isBlocked: user.isBlocked,
+                phoneNumber: user.phoneNumber,
+                roles: user.roles,
+            }))
 
+            setDataUsers(formattedData)
 
+        } catch (error) {
+            notification.error({
+                title: 'Ошибка загрузки данных пользователей'
+            })
+        }
     }
 
-    const items: MenuProps['items'] = [
-        {
-            label: 'Редактировать',
-            key: '1',
-            icon: <EditOutlined />,
-        },
-        {
-            label: 'Перейти к профилю',
-            key: '2',
-            icon: <UserOutlined />,
-        },
-        {
-            label: 'Заблокировать',
-            key: '3',
-            icon: <StopOutlined />,
-            danger: true,
-        },
-        {
-            label: 'Удалить пользователя',
-            key: '4',
-            icon: <DeleteOutlined />,
-            danger: true,
+    useEffect(() => {
+        loadDataUsers()
+    }, [])
 
+    const updateUserStatus = async (id: number, action: 'block' | 'unblock' | 'delete') => {
+        try {
+            switch (action) {
+                case 'block':
+                    await blockUser(id)
+                    notification.success({
+                        title: 'Пользователь Заблокирован'
+                    })
+                        break
+
+                case 'unblock':
+                    await unblockUser(id)
+                    notification.success({
+                        title: 'Пользователь разблокирован'
+                    })
+                        break
+
+                case 'delete':
+                    await deleteUser(id)
+                    notification.success({
+                        title: 'Пользователь удален'
+                    })
+                        break
+            }
+            await loadDataUsers()
+
+        } catch (error) {
+            notification.error({
+                title: 'Ошибка ...'
+            })
         }
-    ];
+    }
 
-    const menuProps = {
-        items,
-        onClick: handleMenuClick,
+    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+        setSelectedRowKeys(newSelectedRowKeys);
+    };
+
+    const rowSelection = {
+        selectedRowKeys,
+        onChange: onSelectChange,
     };
 
     const columns: ColumnsType<TableUser> = [
         {
+            key: 'userAvatar',
             render: () => (
-                <Avatar shape="square" size="large" icon={<UserOutlined />} />
+                <Avatar shape="square" size="large" icon={<UserOutlined/>}/>
             )
         },
         {
@@ -94,7 +130,7 @@ export const TableUsers: React.FC = () => {
             dataIndex: 'roles',
             key: 'roles',
             render: (roles: string[]) => {
-                if(Array.isArray(roles)){
+                if (Array.isArray(roles)) {
                     return roles.join(', ')
                 }
                 return roles || '-'
@@ -113,54 +149,61 @@ export const TableUsers: React.FC = () => {
         },
         {
             title: 'Действия',
-            key: 'action',
-            render: ()=> (
-                <div className={styles.container}>
-                    <Dropdown menu={menuProps} placement="bottomRight">
-                        <Button icon={<EllipsisOutlined />}/>
+            key: 'operation',
+            render: (_, profile) => {
+                const items: MenuProps['items'] = [
+                    {
+                        key: 0,
+                        label: `Пользователь ${profile.username}`,
+                        disabled: true,
+                    },
+                    {
+                        type: 'divider'
+                    },
+                    {
+                        key: 1,
+                        label: 'Перейти к профилю',
+                        icon: <UserOutlined/>
+                    },
+                    {
+                        key: 2,
+                        label: 'Управление ролями',
+                        icon: <SafetyCertificateOutlined/>
+                    },
+                    {
+                        key: 3,
+                        label: 'Заблокировать',
+                        icon: <PoweroffOutlined />
+                    },
+                    {
+                        type: 'divider'
+                    },
+                    {
+                        key: 4,
+                        danger: true,
+                        label: 'Удалить пользователя',
+                        icon: <DeleteOutlined />,
+                        onClick: () => {
+                            Modal.confirm({
+                                title: 'Удалить пользователя?',
+                                content: `Вы уверены что хотите удалить пользователя ${profile.username}`,
+                                okText: 'Удалить',
+                                cancelText: 'Отмена',
+                                onOk: () => {updateUserStatus(profile.id, 'delete')}
+                            })
+                        }
+
+
+                    }
+                ]
+                return (
+                    <Dropdown menu={{items}}>
+                        <Button icon={<MoreOutlined />} color={"default"}/>
                     </Dropdown>
-                </div>
-
-            )
+                )
+            },
         }
-    ];
-
-    useEffect(() => {
-        const LoadDataUsers = async () => {
-            try {
-                const response = await getUsers()
-
-                    const formattedData: TableUser[] = response.data.map(user => ({
-                        username: user.username,
-                        email: user.email,
-                        date: user.date,
-                        isBlocked: user.isBlocked,
-                        phoneNumber: user.phoneNumber,
-                        roles: user.roles,
-                    }))
-
-                    setDataUsers(formattedData)
-
-            } catch (error) {
-                notification.error({
-                    title: 'Ошибка загрузки данных пользователей'
-                })
-            }
-        }
-
-LoadDataUsers()
-
-    },[])
-
-    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-        setSelectedRowKeys(newSelectedRowKeys);
-    };
-
-    const rowSelection = {
-        selectedRowKeys,
-        onChange: onSelectChange,
-    };
-
+    ]
     return (
         <Flex gap="medium" vertical>
             <Table
@@ -173,6 +216,5 @@ LoadDataUsers()
                 }}
             />
         </Flex>
-    );
-};
-
+    )
+}

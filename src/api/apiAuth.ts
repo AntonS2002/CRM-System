@@ -1,4 +1,4 @@
-import type {AuthData, MetaResponse, Profile, Token, User, UserRegistration} from "../type";
+import type {AuthData, Profile, Token, User, UserRegistration} from "../type";
 import {tokenManager} from "../util/auth.ts";
 import {store} from "../store";
 import {logout} from "../store/slices/authSlice.ts";
@@ -63,12 +63,3 @@ export async function getProfileUser() {
     return response.data;
 }
 
-export async function getUsers() {
-    const response = await axiosInstance.get<MetaResponse<Profile>>('/admin/users');
-    return response.data;
-}
-
-export async function deleteUser(id: number) {
-    const response = await axiosInstance.delete(`/admin/users/${id}`)
-    return response.data;
-}
