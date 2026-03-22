@@ -1,22 +1,32 @@
 import {axiosInstance} from "./apiInstance.ts";
-import type {MetaResponse, Profile} from "../type";
+import {type MetaResponse, type Profile, Roles, type User} from "../type";
 
 export async function getUsers() {
     const response = await axiosInstance.get<MetaResponse<Profile>>('/admin/users');
     return response.data;
 }
 
+export async function getUser(id: number) {
+    const response = await axiosInstance.get<Profile>(`/admin/users/${id}`);
+    return response.data;
+}
+
 export async function deleteUser(id: number) {
-    const response = await axiosInstance.delete(`/admin/users/${id}`)
+    const response = await axiosInstance.delete<string>(`/admin/users/${id}`)
     return response.data;
 }
 
 export async function blockUser(id: number) {
-    const response = await axiosInstance.post(`/admin/users/${id}/block`);
+    const response = await axiosInstance.post<User>(`/admin/users/${id}/block`);
     return response.data;
 }
 
 export async function unblockUser(id: number) {
-    const response = await axiosInstance.post(`/admin/users/${id}/unblock`)
+    const response = await axiosInstance.post<User>(`/admin/users/${id}/unblock`)
+    return response.data;
+}
+
+export async function updateRolesUser(id: number, roles: Roles[]) {
+    const response = await axiosInstance.post<User>(`/admin/users/${id}/rights`, {roles});
     return response.data;
 }

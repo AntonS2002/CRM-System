@@ -13,6 +13,7 @@ import {logout} from "./util/auth.ts";
 import {initAuth} from "./util/initAuth.ts";
 import {ProtectedRoute} from "./components/ProtectedRoute.tsx";
 import {UsersPage} from "./pages/UsersPage.tsx";
+import {UserPage} from "./pages/UserPage.tsx";
 
 const router = createBrowserRouter([
             {path: "/", element: <Navigate to="/auth/signup" replace />},
@@ -37,7 +38,12 @@ const router = createBrowserRouter([
                     {index: true, element: <Navigate to="/app/todos" replace />},
                     {path: "todos", element: <TodoListPage/>},
                     {path: "profile", element: <ProfilePage/>, hydrateFallbackElement: <div>Loading...</div>,},
-                    {path: "users", element: <UsersPage/>}
+                    {
+                        path: "users",
+                        children: [
+                            {index: true, element: <UsersPage/>},
+                            {path: ':id', element: <UserPage/>}
+                        ]}
                 ]
             },
             {path: "/logout", action: logout}

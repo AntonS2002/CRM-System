@@ -1,19 +1,19 @@
 import React, {useEffect, useState} from 'react';
-import {Avatar, notification, Table, Flex, Button, Dropdown, type MenuProps, Modal, Drawer, Space, Select} from 'antd';
+import {Avatar, notification, Table, Flex, Button, Dropdown, type MenuProps, Modal, Drawer, Select} from 'antd';
 import {Roles, type User} from "../../type";
 import type {ColumnsType} from "antd/es/table";
-import {DeleteOutlined, UserOutlined, SafetyCertificateOutlined, MoreOutlined, PoweroffOutlined } from '@ant-design/icons';
-import {blockUser, deleteUser, getUsers, unblockUser} from "../../api/apiTableUsers.ts";
+import {DeleteOutlined, UserOutlined, SafetyCertificateOutlined, MoreOutlined} from '@ant-design/icons';
+import {blockUser, deleteUser, getUsers, unblockUser, updateRolesUser} from "../../api/apiTableUsers.ts";
 import {useAppDispatch, useAppSelector} from "../../store/hooks.ts";
 import styles from '../../components/TableUsers/TableUsers.module.scss'
-
-
-
+import {useNavigate} from "react-router-dom";
 
 type TableUser = Pick<User, 'username' | 'email' | 'date' | 'isBlocked' | 'roles' | 'phoneNumber' | 'id'>
 
 
 export const TableUsers: React.FC = () => {
+
+    const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
     const auth = useAppSelector(state => state.auth)
@@ -29,7 +29,11 @@ export const TableUsers: React.FC = () => {
 
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
-    const [selectedRoles, setSelectedRoles] = useState<Roles[] | null>([]);
+    const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+
+    const [selectedRoles, setSelectedRoles] = useState<Roles[]>([]);
+
+    const [isBlocked, setIsBlocked] = useState<boolean>();
 
     const loadDataUsers = async () => {
         try {
@@ -66,6 +70,7 @@ export const TableUsers: React.FC = () => {
                     notification.success({
                         title: 'Пользователь Заблокирован'
                     })
+                    setIsBlocked(true)
                         break
 
                 case 'unblock':
@@ -73,6 +78,7 @@ export const TableUsers: React.FC = () => {
                     notification.success({
                         title: 'Пользователь разблокирован'
                     })
+                    setIsBlocked(false)
                         break
 
                 case 'delete':
@@ -91,19 +97,35 @@ export const TableUsers: React.FC = () => {
         }
     }
 
-
     const handleOpenDrawer = (user: TableUser) => {
+        setSelectedUserId(user.id)
         setDrawerOpen(true)
         setSelectedRoles(user.roles)
     }
 
     const handleCloseDrawer = () => {
+        setSelectedUserId(null)
         setDrawerOpen(false)
-        setSelectedRoles(null)
+        setSelectedRoles([])
     }
 
     const handleSaveRoles = async () => {
+
+        if(!selectedUserId){
+            notification.error({
+                title: 'Пользователь не выбран'
+            })
+            return
+        }
+
         try {
+            await updateRolesUser(selectedUserId, selectedRoles)
+            notification.success({
+                title: 'Роли обновлены',
+                description: 'Роли пользователя успешно обновлены'
+            })
+            await loadDataUsers()
+            handleCloseDrawer()
 
         } catch (error) {
             notification.error({
@@ -188,7 +210,8 @@ export const TableUsers: React.FC = () => {
                     {
                         key: 1,
                         label: 'Перейти к профилю',
-                        icon: <UserOutlined/>
+                        icon: <UserOutlined/>,
+                        onClick: () => {navigate(`/app/users/${profile.id}`)}
                     },
                     {
                         key: 2,
@@ -198,8 +221,10 @@ export const TableUsers: React.FC = () => {
                     },
                     {
                         key: 3,
-                        label: 'Заблокировать',
-                        icon: <PoweroffOutlined />
+                        label: profile.isBlocked ? 'Разблокировать' : 'Заблокировать',
+                        icon: <UserOutlined/>,
+                        onClick: () => {updateUserStatus(profile.id, isBlocked ? 'unblock' : 'block')}
+
                     },
                     {
                         type: 'divider'
