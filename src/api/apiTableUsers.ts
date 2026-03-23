@@ -1,5 +1,5 @@
 import {axiosInstance} from "./apiInstance.ts";
-import {type MetaResponse, type Profile, Roles, type User} from "../type";
+import {type MetaResponse, type Profile, Roles, type User, type UserRequest} from "../type";
 
 export async function getUsers() {
     const response = await axiosInstance.get<MetaResponse<Profile>>('/admin/users');
@@ -28,5 +28,10 @@ export async function unblockUser(id: number) {
 
 export async function updateRolesUser(id: number, roles: Roles[]) {
     const response = await axiosInstance.post<User>(`/admin/users/${id}/rights`, {roles});
+    return response.data;
+}
+
+export async function updateProfileUser(id: number, profile: UserRequest)  {
+    const  response = await axiosInstance.put<User>(`/admin/users/${id}`, profile);
     return response.data;
 }
