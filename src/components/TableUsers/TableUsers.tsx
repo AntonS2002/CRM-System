@@ -1,5 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import {Avatar, notification, Table, Flex, Button, Dropdown, type MenuProps, Modal, Drawer, Select} from 'antd';
+import {
+    Avatar,
+    notification,
+    Table,
+    Flex,
+    Button,
+    Dropdown,
+    type MenuProps,
+    Modal,
+    Drawer,
+    Select,
+    Input,
+    Typography,
+} from 'antd';
 import {Roles, type User} from "../../type";
 import type {ColumnsType} from "antd/es/table";
 import {DeleteOutlined, UserOutlined, SafetyCertificateOutlined, MoreOutlined} from '@ant-design/icons';
@@ -10,6 +23,14 @@ import {useNavigate} from "react-router-dom";
 
 type TableUser = Pick<User, 'username' | 'email' | 'date' | 'isBlocked' | 'roles' | 'phoneNumber' | 'id'>
 
+type SortBy = 'email' | 'username' | 'id'
+type SortOrder =  'asc' | 'desc'
+
+type SortDirection = {
+        sortBy: string
+        sortOrder: string
+        totalAmount: number
+}
 
 export const TableUsers: React.FC = () => {
 
@@ -22,22 +43,29 @@ export const TableUsers: React.FC = () => {
     const isAdmin = userRoles.includes(Roles.ADMIN)
     const isModerator = userRoles.includes(Roles.MODERATOR)
 
+    const [search, setSearch] = useState<string>('');
+    const [sortBy, setSortBy] = useState<SortBy>('id');
+    const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+    const [isBlocked, setIsBlocked] = useState<boolean>(false);
+    const [limit, setLimit] = useState<number>(20);
+    const [page, setPage] = useState<number>(0);
+
+    const [sort, setSort] = useState<SortDirection>({
+        sortBy: sortBy,
+        sortOrder: sortOrder,
+        totalAmount: limit
+});
 
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-
     const [dataUsers, setDataUsers] = useState<TableUser[]>([]);
-
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-
     const [selectedRoles, setSelectedRoles] = useState<Roles[]>([]);
-
-    const [isBlocked, setIsBlocked] = useState<boolean>();
 
     const loadDataUsers = async () => {
         try {
-            const response = await getUsers()
+
+            const response = await getUsers({search, sortBy, sortOrder, isBlocked, limit, page})
 
             const formattedData: TableUser[] = response.data.map(user => ({
                 id: user.id,
@@ -49,6 +77,9 @@ export const TableUsers: React.FC = () => {
                 roles: user.roles
             }))
 
+            const meta = (response.meta)
+
+            setSort(meta)
             setDataUsers(formattedData)
 
         } catch (error) {
@@ -89,7 +120,7 @@ export const TableUsers: React.FC = () => {
                         break
             }
             await loadDataUsers()
-
+            setSearch('')
         } catch (error) {
             notification.error({
                 title: 'Ошибка ...'
@@ -154,11 +185,14 @@ export const TableUsers: React.FC = () => {
             title: 'Имя пользователя',
             dataIndex: 'username',
             key: 'username',
+            filtered: true,
+            sorter: true,
         },
         {
             title: 'Email пользователя',
             dataIndex: 'email',
             key: 'email',
+            sorter: true
         },
         {
             title: 'Дата регистрации',
@@ -262,8 +296,22 @@ export const TableUsers: React.FC = () => {
         {label: 'USER', value: Roles.USER},
     ]
 
+    const handleSearch = (value: string) => {
+        setSearch(value)
+    }
+
+
+
     return (
-        <>
+        <div className={styles.page}>
+            <Typography.Title level={2}>Пользователи</Typography.Title>
+            <Typography.Paragraph>Поиск по имени или email:</Typography.Paragraph>
+
+                <Input.Search
+                    onChange={(e) => handleSearch(e.target.value)}
+                    allowClear
+                    prefix={<UserOutlined
+                    />}/>
             <Flex gap="medium" vertical>
                 <Table
                     rowKey={'username'}
@@ -271,7 +319,9 @@ export const TableUsers: React.FC = () => {
                     columns={columns}
                     dataSource={dataUsers}
                     pagination={{
-                        pageSize: 20,
+                        defaultCurrent: 1,
+                        defaultPageSize: sort.totalAmount,
+                        showSizeChanger: true,
                     }}
                 />
             </Flex>
@@ -303,7 +353,7 @@ export const TableUsers: React.FC = () => {
                     style={{width:'400px'}}
                 />
             </Drawer>
-        </>
+        </div>
 
 
 

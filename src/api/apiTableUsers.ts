@@ -1,8 +1,17 @@
 import {axiosInstance} from "./apiInstance.ts";
-import {type MetaResponse, type Profile, Roles, type User, type UserRequest} from "../type";
+import {type MetaResponse, type Profile, Roles, type User, type UserFilters, type UserRequest} from "../type";
 
-export async function getUsers() {
-    const response = await axiosInstance.get<MetaResponse<Profile>>('/admin/users');
+export async function getUsers({search, page, sortBy, sortOrder, limit, isBlocked}: UserFilters) {
+    const response = await axiosInstance.get<MetaResponse<User>>('/admin/users', {
+        params: {
+            search: search,
+            sortBy: sortBy,
+            sortOrder: sortOrder,
+            isBlocked: isBlocked,
+            limit: limit,
+            page: page,
+        }
+    });
     return response.data;
 }
 
