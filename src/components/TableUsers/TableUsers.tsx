@@ -11,9 +11,9 @@ import {
     Drawer,
     Select,
     Input,
-    Typography,
+    Typography, type TableProps,
 } from 'antd';
-import {Roles, type User} from "../../type";
+import {type Profile, Roles, type User} from "../../type";
 import type {ColumnsType} from "antd/es/table";
 import {DeleteOutlined, UserOutlined, SafetyCertificateOutlined, MoreOutlined} from '@ant-design/icons';
 import {blockUser, deleteUser, getUsers, unblockUser, updateRolesUser} from "../../api/apiTableUsers.ts";
@@ -21,16 +21,13 @@ import {useAppDispatch, useAppSelector} from "../../store/hooks.ts";
 import styles from '../../components/TableUsers/TableUsers.module.scss'
 import {useNavigate} from "react-router-dom";
 
-type TableUser = Pick<User, 'username' | 'email' | 'date' | 'isBlocked' | 'roles' | 'phoneNumber' | 'id'>
+type TableUser = Pick<User, 'username' | 'email' | 'date' | 'isBlocked' | 'roles' | 'phoneNumber' | 'id' >
 
-type SortBy = 'email' | 'username' | 'id'
-type SortOrder =  'asc' | 'desc'
-
-type SortDirection = {
-        sortBy: string
-        sortOrder: string
-        totalAmount: number
+interface Filtered {
+    sortBy: string,
+    sortOrder: 'asc' | 'desc'
 }
+
 
 export const TableUsers: React.FC = () => {
 
@@ -43,44 +40,39 @@ export const TableUsers: React.FC = () => {
     const isAdmin = userRoles.includes(Roles.ADMIN)
     const isModerator = userRoles.includes(Roles.MODERATOR)
 
-    const [search, setSearch] = useState<string>('');
-    const [sortBy, setSortBy] = useState<SortBy>('id');
-    const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
     const [isBlocked, setIsBlocked] = useState<boolean>(false);
-    const [limit, setLimit] = useState<number>(20);
-    const [page, setPage] = useState<number>(0);
-
-    const [sort, setSort] = useState<SortDirection>({
-        sortBy: sortBy,
-        sortOrder: sortOrder,
-        totalAmount: limit
-});
 
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-    const [dataUsers, setDataUsers] = useState<TableUser[]>([]);
+    const [dataUsers, setDataUsers] = useState<Profile[]>([]);
+
+    const [filter, setFilter] = useState<Filtered>({
+        sortBy: 'id',
+        sortOrder: 'asc',
+    })
+
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
     const [selectedRoles, setSelectedRoles] = useState<Roles[]>([]);
 
     const loadDataUsers = async () => {
+
+        const {sortBy, sortOrder} = filter
         try {
 
-            const response = await getUsers({search, sortBy, sortOrder, isBlocked, limit, page})
+            const response = await getUsers({sortBy, sortOrder});
 
-            const formattedData: TableUser[] = response.data.map(user => ({
-                id: user.id,
-                username: user.username,
-                email: user.email,
-                date: user.date,
-                isBlocked: user.isBlocked,
-                phoneNumber: user.phoneNumber,
-                roles: user.roles
-            }))
+            // const formattedData: TableUser[] = response.data.map(user => ({
+            //     id: user.id,
+            //     username: user.username,
+            //     email: user.email,
+            //     date: user.date,
+            //     isBlocked: user.isBlocked,
+            //     phoneNumber: user.phoneNumber,
+            //     roles: user.roles
+            // }))
 
-            const meta = (response.meta)
+            setDataUsers(response.data)
 
-            setSort(meta)
-            setDataUsers(formattedData)
 
         } catch (error) {
             notification.error({
@@ -90,8 +82,8 @@ export const TableUsers: React.FC = () => {
     }
 
     useEffect(() => {
-        loadDataUsers()
-    }, [])
+           loadDataUsers()
+    }, [filter.sortBy, filter.sortOrder]);
 
     const updateUserStatus = async (id: number, action: 'block' | 'unblock' | 'delete') => {
         try {
@@ -120,7 +112,6 @@ export const TableUsers: React.FC = () => {
                         break
             }
             await loadDataUsers()
-            setSearch('')
         } catch (error) {
             notification.error({
                 title: 'Ошибка ...'
@@ -187,12 +178,12 @@ export const TableUsers: React.FC = () => {
             key: 'username',
             filtered: true,
             sorter: true,
+            sortOrder: filter.sortBy === 'username' ? (filter.sortOrder === "asc" ? 'ascend' : 'descend') : null,
         },
         {
             title: 'Email пользователя',
             dataIndex: 'email',
             key: 'email',
-            sorter: true
         },
         {
             title: 'Дата регистрации',
@@ -296,11 +287,30 @@ export const TableUsers: React.FC = () => {
         {label: 'USER', value: Roles.USER},
     ]
 
-    const handleSearch = (value: string) => {
-        setSearch(value)
+    const hadleTableChange: TableProps<User>['onChange'] = (pagination, filters, sorter, extra) => {
+
+        console.log('pagination:', pagination);
+        console.log('filters:', filters);
+        console.log('sorter:', sorter);
+        console.log('extra:', extra);
+
+        let sortBy = 'id'
+        let sortOrder: 'asc' | 'desc' = 'asc';
+
+        if(sorter && !Array.isArray(sorter)) {
+            sortBy = sorter.field as string
+            if(sorter.order === 'ascend'){
+                sortOrder = 'asc'
+            } else if(sorter.order === 'descend'){
+                sortOrder = 'desc'
+            }
+        }
+
+        setFilter({
+            sortBy,
+            sortOrder,
+        })
     }
-
-
 
     return (
         <div className={styles.page}>
@@ -308,21 +318,16 @@ export const TableUsers: React.FC = () => {
             <Typography.Paragraph>Поиск по имени или email:</Typography.Paragraph>
 
                 <Input.Search
-                    onChange={(e) => handleSearch(e.target.value)}
                     allowClear
                     prefix={<UserOutlined
                     />}/>
             <Flex gap="medium" vertical>
                 <Table
-                    rowKey={'username'}
+                    rowKey={'id'}
                     rowSelection={rowSelection}
                     columns={columns}
                     dataSource={dataUsers}
-                    pagination={{
-                        defaultCurrent: 1,
-                        defaultPageSize: sort.totalAmount,
-                        showSizeChanger: true,
-                    }}
+                    onChange={hadleTableChange}
                 />
             </Flex>
 

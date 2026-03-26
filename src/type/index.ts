@@ -100,7 +100,7 @@ export interface MetaResponse<T> {
     data: T[]
     meta: {
         totalAmount: number;
-        sortBy: string;
+        sortBy: string | null;
         sortOrder: 'asc' | 'desc';
     }
 }
