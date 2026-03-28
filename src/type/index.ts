@@ -59,11 +59,11 @@ export interface Profile {
     email: string;
     date: string;
     isBlocked: boolean;
-    roles: Role[];
+    roles: string[];
     phoneNumber: string;
 }
 
-type Role = ADMIN | USER | MODERATOR
+
 
 
 
