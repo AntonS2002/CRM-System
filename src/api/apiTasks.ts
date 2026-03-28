@@ -1,5 +1,5 @@
 import type {
-    FilterType,
+    Filter,
     MetaResponse,
     Todo,
     TodoInfo,
@@ -7,7 +7,7 @@ import type {
 } from "../type";
 import {axiosInstance} from "./apiInstance.ts";
 
-export async function getTodo(status: FilterType) {
+export async function getTodos(status: Filter) {
     const response = await axiosInstance.get<MetaResponse<Todo, TodoInfo>>('/todos',{
         params: {
             filter: status
@@ -23,12 +23,12 @@ export async function addTodo(todo: TodoRequest) {
 }
 
 export async function editTodo(id: number, updateTodo: Partial<Todo>) {
-        const response = await axiosInstance.put<Todo>(`/todos/${id}`, updateTodo,{})
+        const response = await axiosInstance.put<Todo>(`/todos/${id}`, updateTodo)
         return response.data;
 }
 
 export async function deleteTodo(id: number) {
-        const response = await axiosInstance.delete<string>(`/todos/${id}`, {})
+        const response = await axiosInstance.delete<string>(`/todos/${id}`)
         return response.data;
 }
 

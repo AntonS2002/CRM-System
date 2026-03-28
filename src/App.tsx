@@ -14,7 +14,7 @@ import {initAuth} from "./util/initAuth.ts";
 import {ProtectedRoute} from "./components/ProtectedRoute.tsx";
 
 const router = createBrowserRouter([
-            {path: "/", element: <Navigate to="/auth/signup" replace />},
+            {path: "/", element: <Navigate to="/auth/login" replace />},
 
             {
                 path: "auth",

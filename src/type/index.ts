@@ -23,7 +23,7 @@ export interface MetaResponse<T, N> {
         totalAmount: number
     }
 }
-export type FilterType = 'all' | 'completed' | 'inWork';
+export type Filter = 'all' | 'completed' | 'inWork';
 
 export interface UserRegistration {
     login: string;
@@ -59,10 +59,11 @@ export interface Profile {
     email: string;
     date: string;
     isBlocked: boolean;
-    roles: [];
+    roles: Role[];
     phoneNumber: string;
 }
 
+type Role = ADMIN | USER | MODERATOR
 
 
 
