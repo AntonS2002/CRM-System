@@ -16,7 +16,7 @@ import {UsersPage} from "./pages/UsersPage.tsx";
 import {UserPage} from "./pages/UserPage.tsx";
 
 const router = createBrowserRouter([
-            {path: "/", element: <Navigate to="/auth/signup" replace />},
+            {path: "/", element: <Navigate to="/auth/login" replace />},
 
             {
                 path: "auth",

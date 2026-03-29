@@ -11,7 +11,7 @@ import {
     Drawer,
     Select,
     Input,
-    Typography, type TableProps,
+    Typography, type TableProps, Segmented,
 } from 'antd';
 import {type Profile, Roles, type User} from "../../type";
 import type {ColumnsType} from "antd/es/table";
@@ -23,11 +23,27 @@ import {useNavigate} from "react-router-dom";
 
 type TableUser = Pick<User, 'username' | 'email' | 'date' | 'isBlocked' | 'roles' | 'phoneNumber' | 'id' >
 
-interface Filtered {
+interface TableParams {
     sortBy: string,
-    sortOrder: 'asc' | 'desc'
+    sortOrder: 'asc' | 'desc',
+    isBlocked: boolean | undefined,
+    search: string | undefined,
 }
 
+function useDebounce(value: string, delay: number) {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay)
+        return () => {
+            clearTimeout(handler);
+        }
+    }, [value, delay])
+
+    return debouncedValue;
+}
 
 export const TableUsers: React.FC = () => {
 
@@ -45,10 +61,16 @@ export const TableUsers: React.FC = () => {
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
     const [dataUsers, setDataUsers] = useState<Profile[]>([]);
 
-    const [filter, setFilter] = useState<Filtered>({
+    const [tableParams, setTableParams] = useState<TableParams>({
         sortBy: 'id',
         sortOrder: 'asc',
+        isBlocked: undefined,
+        search: undefined,
+
     })
+    const [filter, setFilter] = useState<string>('all')
+    const [searchValue, setSearchValue] = useState<string>('')
+    const debouncedSearch = useDebounce(searchValue, 1000)
 
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -56,24 +78,10 @@ export const TableUsers: React.FC = () => {
 
     const loadDataUsers = async () => {
 
-        const {sortBy, sortOrder} = filter
+        const {sortBy, sortOrder, isBlocked, search} = tableParams
         try {
-
-            const response = await getUsers({sortBy, sortOrder});
-
-            // const formattedData: TableUser[] = response.data.map(user => ({
-            //     id: user.id,
-            //     username: user.username,
-            //     email: user.email,
-            //     date: user.date,
-            //     isBlocked: user.isBlocked,
-            //     phoneNumber: user.phoneNumber,
-            //     roles: user.roles
-            // }))
-
+            const response = await getUsers({sortBy, sortOrder, isBlocked, search});
             setDataUsers(response.data)
-
-
         } catch (error) {
             notification.error({
                 title: 'Ошибка загрузки данных пользователей'
@@ -82,8 +90,15 @@ export const TableUsers: React.FC = () => {
     }
 
     useEffect(() => {
+        setTableParams(prev => ({
+            ...prev,
+            search: debouncedSearch || undefined,
+        }))
+    }, [debouncedSearch]);
+
+    useEffect(() => {
            loadDataUsers()
-    }, [filter.sortBy, filter.sortOrder]);
+    }, [tableParams.sortBy, tableParams.sortOrder, tableParams.isBlocked, tableParams.search]);
 
     const updateUserStatus = async (id: number, action: 'block' | 'unblock' | 'delete') => {
         try {
@@ -176,14 +191,15 @@ export const TableUsers: React.FC = () => {
             title: 'Имя пользователя',
             dataIndex: 'username',
             key: 'username',
-            filtered: true,
             sorter: true,
-            sortOrder: filter.sortBy === 'username' ? (filter.sortOrder === "asc" ? 'ascend' : 'descend') : null,
+            sortOrder: tableParams.sortBy === 'username' ? (tableParams.sortOrder === "asc" ? 'ascend' : 'descend') : null,
         },
         {
             title: 'Email пользователя',
             dataIndex: 'email',
             key: 'email',
+            sorter: true,
+            sortOrder: tableParams.sortBy === 'email' ? (tableParams.sortOrder === 'asc' ? 'ascend' : 'descend') : null
         },
         {
             title: 'Дата регистрации',
@@ -287,12 +303,7 @@ export const TableUsers: React.FC = () => {
         {label: 'USER', value: Roles.USER},
     ]
 
-    const hadleTableChange: TableProps<User>['onChange'] = (pagination, filters, sorter, extra) => {
-
-        console.log('pagination:', pagination);
-        console.log('filters:', filters);
-        console.log('sorter:', sorter);
-        console.log('extra:', extra);
+    const handleSorterChange: TableProps<User>['onChange'] = (pagination, _, sorter) => {
 
         let sortBy = 'id'
         let sortOrder: 'asc' | 'desc' = 'asc';
@@ -306,10 +317,48 @@ export const TableUsers: React.FC = () => {
             }
         }
 
-        setFilter({
-            sortBy,
+        setTableParams(prev => ({
+            ...prev,
             sortOrder,
-        })
+            sortBy,
+        }))
+    }
+
+    const handleFilterChange = (value: string) => {
+        setFilter(value)
+
+        let isBlocked: boolean | undefined
+
+        switch (value) {
+            case 'block':
+                isBlocked = true
+                break
+            case 'unblock':
+                isBlocked = false
+                break
+            default:
+                isBlocked = undefined
+                break
+        }
+
+        setTableParams(prev => ({
+            ...prev,
+            isBlocked,
+        }))
+    }
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value
+        setSearchValue(value)
+    }
+
+    const handleClearSearchChange = () => {
+        setSearchValue('')
+
+        setTableParams(prev => ({
+            ...prev,
+            search: undefined,
+        }))
     }
 
     return (
@@ -319,15 +368,40 @@ export const TableUsers: React.FC = () => {
 
                 <Input.Search
                     allowClear
-                    prefix={<UserOutlined
-                    />}/>
+                    prefix={<UserOutlined/>}
+                    value={searchValue}
+                    onChange={handleSearchChange}
+                    onClear={handleClearSearchChange}
+                />
+            <div className={styles.segment}>
+                <Segmented
+                    options={[
+                        {
+                            label: 'Все',
+                            value: 'all',
+                        },
+                        {
+                            label: 'Заблокирован',
+                            value: 'block',
+                        },
+                        {
+                            label: 'Разблокирован',
+                            value: 'unBlock',
+                        },
+                    ]}
+                    value={filter}
+                    onChange={handleFilterChange}
+                />
+            </div>
+
             <Flex gap="medium" vertical>
                 <Table
                     rowKey={'id'}
                     rowSelection={rowSelection}
                     columns={columns}
                     dataSource={dataUsers}
-                    onChange={hadleTableChange}
+                    onChange={handleSorterChange}
+
                 />
             </Flex>
 
