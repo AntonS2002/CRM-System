@@ -1,0 +1,109 @@
+import type {Rule} from "antd/es/form";
+
+const usernameRules = {
+    min: 1,
+    max: 60,
+}
+
+const loginRules = {
+    min: 2,
+    max: 60
+}
+
+const passwordRules = {
+    min: 6,
+    max: 60
+}
+
+export const usernameTextAuthRules: Rule[] = [
+    {
+        required: true,
+        message: "Поле не должно быть пустым",
+    },
+    {
+        whitespace: true,
+        message: 'Введите имя пользователя!'
+    },
+    {
+        min: usernameRules.min,
+        message: `Минимум ${usernameRules.min} символа`,
+    },
+    {
+        max: usernameRules.max,
+        message: `Максимум ${usernameRules.max} символа`,
+    },
+    {
+        pattern: /^[a-zA-Zа-яА-ЯёЁ\s]+$/,
+        message: 'Имя может содержать только буквы и пробелы'
+    }
+]
+
+export const loginTextAuthRules: Rule[] = [
+    {
+        required: true,
+        message: 'Поле не должно быть пустым',
+    },
+    {
+        whitespace: true,
+        message: 'Введите логин!'
+    },
+    {
+        min: loginRules.min,
+        message: `Минимум ${loginRules.min} символов`,
+    },
+    {
+        max: loginRules.max,
+        message: `Максимум ${loginRules.max} символов`,
+    },
+    {
+        pattern: /^[za-zA-Zа]+$/,
+        message: 'Только буквы EN! Без цифр, пробелов и символов.'
+    }
+]
+
+export const passwordTextAuthRules: Rule[] = [
+    {
+        required: true,
+        message: "Поле не должно быть пустым",
+    },
+    {
+        whitespace: true,
+        message: 'Введите пароль!'
+    },
+    {
+        min: passwordRules.min,
+        message: `Минимум ${passwordRules.min} символов`,
+    },
+    {
+        max: passwordRules.max,
+        message: `Максимум ${passwordRules.max} символов`,
+    }
+]
+
+export const emailTextAuthRules: Rule[] = [
+    {
+        required: true,
+        message: "Поле не должно быть пустым",
+    },
+    {
+        whitespace: true,
+        message: 'Введите email!'
+    },
+    {
+        type: 'email',
+        message: 'Введите корректный адрес'
+    }
+]
+
+export const phoneTextAuthRules: Rule[] = [
+    {
+        max: 12,
+        message: 'Введите 12 цифр номера',
+    },
+    {
+        pattern: /^\+?[0-9\s\-()]+$/,
+        message: 'Введите корректный номер телефона'
+    }
+]
+
+

@@ -1,0 +1,20 @@
+.container {
+  margin: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+
+  ul{
+    list-style: none;
+    gap: 16px;
+    font-size: 20px;
+    background-color: white;
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 10px;
+  }
+  li{
+    margin: 3rem;
+  }
+}

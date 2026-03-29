@@ -7,10 +7,10 @@ type MenuItem = Required<MenuProps>['items'][number];
 
 const navigationMenuItems: MenuItem[] = [
     {
-        key: '/',
+        key: '/app/todos',
         label: (
             <NavLink
-                to={"/"}
+                to={"/app/todos"}
                 className={({isActive}) => (isActive ? 'active' : undefined)}
             >
                 Список задач
@@ -18,10 +18,10 @@ const navigationMenuItems: MenuItem[] = [
         )},
 
     {
-        key: '/profile',
+        key: '/app/profile',
         label: (
             <NavLink
-                to={"/profile"}
+                to={"/app/profile"}
                 className={({isActive}) => (isActive ? 'active' : undefined)}
             >
                 Профиль

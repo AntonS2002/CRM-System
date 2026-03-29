@@ -1,10 +1,11 @@
 import {useMemo, useState} from "react";
 import type {Todo} from "../../type";
-import {deleteTodo, editTodo} from "../../api/api.ts";
+import {deleteTodo, editTodo} from "../../api/apiTasks.ts";
 import styles from './TaskItem.module.scss'
 import {Button, Checkbox, Form, Input, notification, Space} from "antd";
 import {CheckOutlined, CloseOutlined, EditOutlined, DeleteOutlined} from "@ant-design/icons";
-import {validationRules} from "../Validation/ValidationRules.ts";
+import {textTaskValidationRules} from "../Validation/TextTaskValidationRules.ts";
+
 
 export interface TodoItemProps {
     todo: Todo
@@ -69,8 +70,15 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
         try {
             await deleteTodo(id)
             await fetchTodos()
+            notification.success({
+                title: 'Успешно',
+                description: 'Задача удалена',
+            })
+
         } catch (error) {
-            alert('Ошибка удаления задачи' + error)
+            notification.error({
+                title: 'Ошибка удаления задачи',
+            })
         }
     }
 
@@ -121,7 +129,7 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
                         <Space>
                             <Form.Item
                                 name="title"
-                                rules={validationRules}>
+                                rules={textTaskValidationRules}>
                                 <Input
                                     className={styles.input}
                                     autoFocus

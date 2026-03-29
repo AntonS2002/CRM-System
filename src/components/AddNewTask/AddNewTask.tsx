@@ -1,8 +1,9 @@
-import {addTodo} from "../../api/api.ts";
+import {addTodo} from "../../api/apiTasks.ts";
 import styles from './AddNewTask.module.scss'
-import {Button, Form, Input} from "antd";
+import {Button, Form, Input, notification} from "antd";
 import {useCallback} from "react";
-import {validationRules} from "../Validation/ValidationRules.ts";
+import {textTaskValidationRules} from "../Validation/TextTaskValidationRules.ts";
+
 
 export interface AddTaskProps {
     fetchTodos: () => void;
@@ -22,8 +23,15 @@ export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
             await addTodo({title: title, isDone: false})
             await fetchTodos()
             form.resetFields()
+
+            notification.success({
+                title: 'Успешно',
+                description: 'Задача добавлена',
+            })
         } catch (error) {
-            alert('Ошибка добавления задачи' + error)
+            notification.error({
+                title: '<Ошибка добавления задачи',
+            })
         }
     }, [fetchTodos, form]);
 
@@ -36,7 +44,7 @@ export const AddNewTask = ({fetchTodos}: AddTaskProps) => {
             >
                 <Form.Item
                     name="title"
-                    rules={validationRules}
+                    rules={textTaskValidationRules}
                 >
                     <Input
                         type="text"
