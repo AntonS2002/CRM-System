@@ -11,7 +11,7 @@ import {
     Drawer,
     Select,
     Input,
-    Typography, type TableProps, Segmented,
+    Typography, type TableProps, Segmented
 } from 'antd';
 import {type Profile, Roles, type User} from "../../type";
 import type {ColumnsType} from "antd/es/table";
@@ -24,11 +24,15 @@ import {useNavigate} from "react-router-dom";
 type TableUser = Pick<User, 'username' | 'email' | 'date' | 'isBlocked' | 'roles' | 'phoneNumber' | 'id' >
 
 interface TableParams {
-    sortBy: string,
-    sortOrder: 'asc' | 'desc',
+    sortBy: string | undefined,
+    sortOrder: 'asc' | 'desc' | undefined,
     isBlocked: boolean | undefined,
     search: string | undefined,
+    limit: number,
+    page: number,
 }
+
+type Filter = 'all' | 'block' | 'unBlock'
 
 function useDebounce(value: string, delay: number) {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -56,8 +60,6 @@ export const TableUsers: React.FC = () => {
     const isAdmin = userRoles.includes(Roles.ADMIN)
     const isModerator = userRoles.includes(Roles.MODERATOR)
 
-    const [isBlocked, setIsBlocked] = useState<boolean>(false);
-
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
     const [dataUsers, setDataUsers] = useState<Profile[]>([]);
 
@@ -66,11 +68,13 @@ export const TableUsers: React.FC = () => {
         sortOrder: 'asc',
         isBlocked: undefined,
         search: undefined,
-
+        limit: 20,
+        page: 1,
     })
-    const [filter, setFilter] = useState<string>('all')
+    const [filter, setFilter] = useState<Filter>('all')
     const [searchValue, setSearchValue] = useState<string>('')
-    const debouncedSearch = useDebounce(searchValue, 1000)
+    const [total, setTotal] = useState<number>(0)
+    const debouncedSearch = useDebounce(searchValue, 500)
 
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -78,10 +82,11 @@ export const TableUsers: React.FC = () => {
 
     const loadDataUsers = async () => {
 
-        const {sortBy, sortOrder, isBlocked, search} = tableParams
+        const {sortBy, sortOrder, isBlocked, search, limit, page} = tableParams
         try {
-            const response = await getUsers({sortBy, sortOrder, isBlocked, search});
+            const response = await getUsers({sortBy, sortOrder, isBlocked, search, limit, page});
             setDataUsers(response.data)
+            setTotal(response.meta.totalAmount)
         } catch (error) {
             notification.error({
                 title: 'Ошибка загрузки данных пользователей'
@@ -93,12 +98,13 @@ export const TableUsers: React.FC = () => {
         setTableParams(prev => ({
             ...prev,
             search: debouncedSearch || undefined,
+            page: 1
         }))
     }, [debouncedSearch]);
 
     useEffect(() => {
            loadDataUsers()
-    }, [tableParams.sortBy, tableParams.sortOrder, tableParams.isBlocked, tableParams.search]);
+    }, [tableParams.sortBy, tableParams.sortOrder, tableParams.isBlocked, tableParams.search, tableParams.limit, tableParams.page]);
 
     const updateUserStatus = async (id: number, action: 'block' | 'unblock' | 'delete') => {
         try {
@@ -108,7 +114,6 @@ export const TableUsers: React.FC = () => {
                     notification.success({
                         title: 'Пользователь Заблокирован'
                     })
-                    setIsBlocked(true)
                         break
 
                 case 'unblock':
@@ -116,7 +121,6 @@ export const TableUsers: React.FC = () => {
                     notification.success({
                         title: 'Пользователь разблокирован'
                     })
-                    setIsBlocked(false)
                         break
 
                 case 'delete':
@@ -264,7 +268,7 @@ export const TableUsers: React.FC = () => {
                         key: 3,
                         label: profile.isBlocked ? 'Разблокировать' : 'Заблокировать',
                         icon: <UserOutlined/>,
-                        onClick: () => {updateUserStatus(profile.id, isBlocked ? 'unblock' : 'block')}
+                        onClick: () => {updateUserStatus(profile.id, profile.isBlocked ? 'unblock' : 'block')}
 
                     },
                     {
@@ -305,26 +309,41 @@ export const TableUsers: React.FC = () => {
 
     const handleSorterChange: TableProps<User>['onChange'] = (pagination, _, sorter) => {
 
-        let sortBy = 'id'
-        let sortOrder: 'asc' | 'desc' = 'asc';
+        const singleSorter = Array.isArray(sorter) ? sorter[0] : sorter
 
-        if(sorter && !Array.isArray(sorter)) {
-            sortBy = sorter.field as string
-            if(sorter.order === 'ascend'){
-                sortOrder = 'asc'
-            } else if(sorter.order === 'descend'){
-                sortOrder = 'desc'
+        let sortBy : string = 'id'
+        let sortOrder: 'asc' | 'desc' | undefined = 'asc'
+
+        if(singleSorter && singleSorter.order) {
+            if(singleSorter.field){
+                sortBy = singleSorter.field as string
             }
+        }
+
+        switch (singleSorter.order) {
+            case 'ascend':
+                sortOrder = 'asc'
+                break
+            case 'descend':
+                sortOrder = 'desc'
+                break
+            default:
+                sortOrder = undefined
         }
 
         setTableParams(prev => ({
             ...prev,
-            sortOrder,
-            sortBy,
+            page: pagination.current ?? prev.page,
+            limit: pagination.pageSize ?? prev.limit,
+            sortOrder: sortOrder,
+            sortBy: sortBy,
+            search: prev.search,
+            isBlocked: prev.isBlocked
         }))
+
     }
 
-    const handleFilterChange = (value: string) => {
+    const handleFilterChange = (value: Filter) => {
         setFilter(value)
 
         let isBlocked: boolean | undefined
@@ -333,7 +352,7 @@ export const TableUsers: React.FC = () => {
             case 'block':
                 isBlocked = true
                 break
-            case 'unblock':
+            case 'unBlock':
                 isBlocked = false
                 break
             default:
@@ -341,9 +360,12 @@ export const TableUsers: React.FC = () => {
                 break
         }
 
+        console.log(isBlocked)
+
         setTableParams(prev => ({
             ...prev,
-            isBlocked,
+            isBlocked: isBlocked,
+            page: 1
         }))
     }
 
@@ -358,6 +380,7 @@ export const TableUsers: React.FC = () => {
         setTableParams(prev => ({
             ...prev,
             search: undefined,
+            page: 1
         }))
     }
 
@@ -401,7 +424,12 @@ export const TableUsers: React.FC = () => {
                     columns={columns}
                     dataSource={dataUsers}
                     onChange={handleSorterChange}
-
+                    pagination={{
+                        current: tableParams.page,
+                        pageSize: tableParams.limit,
+                        total: total,
+                        showSizeChanger: true
+                    }}
                 />
             </Flex>
 

@@ -54,7 +54,7 @@ export interface Profile {
     email: string;
     date: string;
     isBlocked: boolean;
-    roles: [];
+    roles: Roles[];
     phoneNumber: string;
 }
 
