@@ -18,7 +18,7 @@ export const SignupForm = ({onSuccess}: SignupFormProps) => {
 
     const [form] = Form.useForm();
 
-    const addNewUser = async (value: {
+    const handleAddNewUser = async (value: {
         login: string;
         username: string;
         password: string;
@@ -43,7 +43,6 @@ export const SignupForm = ({onSuccess}: SignupFormProps) => {
             form.resetFields();
 
         } catch (error: any) {
-            console.error("Ответ сервера (если есть):", error.response?.data);
             notification.error({
                 title: "Ошибка создания пользователя",
             })
@@ -53,7 +52,7 @@ export const SignupForm = ({onSuccess}: SignupFormProps) => {
 
 return (
     <>
-    <Form onFinish={addNewUser} form={form} size="large" style={{width: '500px'}}>
+    <Form onFinish={handleAddNewUser} form={form} size="large" style={{width: '500px'}}>
         <Form.Item
             label="Имя пользователя:"
             layout="vertical"

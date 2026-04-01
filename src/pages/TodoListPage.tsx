@@ -1,9 +1,9 @@
 import {useCallback, useEffect, useRef, useState} from "react";
-import type {FilterType, Todo, TodoInfo} from "../type";
+import type {Filter, Todo, TodoInfo} from "../type";
 import {TasksList} from "../components/TasksList/TasksList.tsx";
 import {FilterButtons} from "../components/TasksFilter/TasksFilter.tsx";
 import {AddNewTask} from "../components/AddNewTask/AddNewTask.tsx";
-import {getTodo} from "../api/apiTasks.ts";
+import {getTodos} from "../api/apiTasks.ts";
 import styles from './TodoListPage.module.scss'
 import {notification} from "antd";
 
@@ -19,7 +19,7 @@ export const TodoListPage = () => {
 
     const [todos, setTodos] = useState<Todo[]>([])
 
-    const [filter, setFilter] = useState<FilterType>('all')
+    const [filter, setFilter] = useState<Filter>('all')
 
     const [isEditing, setIsEditing] = useState<boolean>(false)
 
@@ -34,7 +34,7 @@ export const TodoListPage = () => {
     const fetchTodos = useCallback(async(): Promise<void> => {
 
         try {
-            const dataTodos = await getTodo(filter)
+            const dataTodos = await getTodos(filter)
                 setTodos(dataTodos.data)
                 if(dataTodos.info) {
                     setCount(dataTodos.info)

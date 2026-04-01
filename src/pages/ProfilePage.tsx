@@ -4,10 +4,10 @@ import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import type {ProfileRequest} from "../type";
-import {getProfileUser, logoutProfile} from "../api/apiAuth.ts";
+import {getUserProfile, logoutProfile} from "../api/apiAuth.ts";
 import {logout} from "../store/slices/authSlice.ts";
 import {tokenManager} from "../util/auth.ts";
-import {Button, notification, Table} from "antd";
+import {Button, notification, Typography} from "antd";
 
 export const ProfilePage = () => {
 
@@ -28,50 +28,42 @@ export const ProfilePage = () => {
                         phoneNumber: response.phoneNumber
                     }
                 ]);
-            } catch (err) {
-                console.error(err);
+            } catch (error) {
+                notification.error({
+                    title: "Ошибка загрузки профиля",
+                    description: `${error}`,
+                });
             }
         };
 
         loadProfile();
     }, []);
 
-    const Logout = async () => {
+    const handleLogout = async () => {
         await logoutProfile();
         dispatch(logout());
         tokenManager.clearToken();
-        localStorage.clear();
+        localStorage.removeItem("refreshToken")
         navigate("/auth/login");
         notification.info({ title: "Вы вышли из системы" });
     };
 
-    const columns = [
-        {
-            title: "Имя пользователя",
-            dataIndex: "username",
-            key: "username",
-        },
-        {
-            title: "email",
-            dataIndex: "email",
-            key: "email",
-        },
-        {
-            title: "Номер телефона",
-            dataIndex: "phoneNumber",
-            key: "phoneNumber",
-        },
-    ];
-
     return (
             <div className={styles.container}>
-                <Table
-                    columns={columns}
-                    dataSource={profileData}
-                    pagination={false}
-                    bordered
-                />
-                <Button danger type={"primary"} onClick={Logout}>Logout</Button>
+                <Typography.Title level={3}>Профиль пользователя</Typography.Title>
+                {profileData.map((profile: ProfileRequest) => {
+                    return (
+                        <ul>
+                            <li>Имя пользователя: {profile.username}</li>
+                            <li>Email: {profile.email}</li>
+                            <li>Номер телефона: {profile.phoneNumber ? profile.phoneNumber : '---'}</li>
+                        </ul>
+                    )
+                })
+                }
+                <Button danger type={"primary"} onClick={handleLogout}>Logout</Button>
             </div>
+
+
     )
 }

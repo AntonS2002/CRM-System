@@ -9,6 +9,7 @@ import {tokenManager} from "../../util/auth.ts";
 import {useDispatch} from "react-redux";
 import {setCredentials} from "../../store/slices/authSlice.ts";
 import {loginUser} from "../../api/apiAuth.ts";
+import type {AuthData} from "../../type";
 
 
 export const LoginForm = () => {
@@ -17,7 +18,7 @@ export const LoginForm = () => {
     const dispatch = useDispatch();
 
 
-    const authUser = async (value: { login: string, password: string, }) => {
+    const handleAuthUser = async (value: AuthData) => {
         try {
             const response = await loginUser(value);
 
@@ -44,7 +45,7 @@ export const LoginForm = () => {
 
     return (
         <>
-            <Form onFinish={authUser} form={form} size="large" style={{width: '500px'}}>
+            <Form onFinish={handleAuthUser} form={form} size="large" style={{width: '500px'}}>
                 <Form.Item
                     label="Логин"
                     layout="vertical"

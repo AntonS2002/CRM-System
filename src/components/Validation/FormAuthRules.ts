@@ -33,8 +33,8 @@ export const usernameTextAuthRules: Rule[] = [
         message: `Максимум ${usernameRules.max} символа`,
     },
     {
-        pattern: /^[a-zA-Zа-яА-ЯёЁ0-9\s]+$/,
-        message: 'Имя может содержать только буквы, цифры и пробелы'
+        pattern: /^[a-zA-Zа-яА-ЯёЁ\s]+$/,
+        message: 'Имя может содержать только буквы и пробелы'
     }
 ]
 
@@ -56,8 +56,8 @@ export const loginTextAuthRules: Rule[] = [
         message: `Максимум ${loginRules.max} символов`,
     },
     {
-        pattern: /^[a-zA-Zа-яА-ЯёЁ]+$/,
-        message: 'Только буквы! Без цифр, пробелов и символов.'
+        pattern: /^[za-zA-Zа]+$/,
+        message: 'Только буквы EN! Без цифр, пробелов и символов.'
     }
 ]
 
@@ -68,7 +68,7 @@ export const passwordTextAuthRules: Rule[] = [
     },
     {
         whitespace: true,
-        message: 'Введите название задачи!'
+        message: 'Введите пароль!'
     },
     {
         min: passwordRules.min,
@@ -87,7 +87,7 @@ export const emailTextAuthRules: Rule[] = [
     },
     {
         whitespace: true,
-        message: 'Введите название задачи!'
+        message: 'Введите email!'
     },
     {
         type: 'email',

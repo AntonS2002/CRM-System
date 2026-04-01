@@ -20,7 +20,7 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config
 
-        if(error.response?.status === 401 && originalRequest._retry) {
+        if(error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
@@ -42,13 +42,13 @@ export async function registerNewUser(user: UserRegistration){
 }
 
 export async function loginUser(user: AuthData) {
-    const response =await axiosInstance.post<Token>('auth/signin', user, {})
+    const response =await axiosInstance.post<Token>('/auth/signin', user)
     return response.data;
 }
 
 export async function logoutProfile() {
-    const repsonse = await axiosInstance.post<string>('/user/logout', {});
-    return repsonse.data
+    const response = await axiosInstance.post<string>('/user/logout');
+    return response.data
 }
 
 export async function refreshToken(refreshTokenValue: string | null)  {

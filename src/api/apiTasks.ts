@@ -31,12 +31,12 @@ export async function addTodo(todo: TodoRequest) {
 }
 
 export async function editTodo(id: number, updateTodo: Partial<Todo>) {
-        const response = await axiosInstance.put<Todo>(`/todos/${id}`, updateTodo,{})
+        const response = await axiosInstance.put<Todo>(`/todos/${id}`, updateTodo)
         return response.data;
 }
 
 export async function deleteTodo(id: number) {
-        const response = await axiosInstance.delete<string>(`/todos/${id}`, {})
+        const response = await axiosInstance.delete<string>(`/todos/${id}`)
         return response.data;
 }
 

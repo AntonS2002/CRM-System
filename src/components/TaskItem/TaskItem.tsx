@@ -70,8 +70,15 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
         try {
             await deleteTodo(id)
             await fetchTodos()
+            notification.success({
+                title: 'Успешно',
+                description: 'Задача удалена',
+            })
+
         } catch (error) {
-            alert('Ошибка удаления задачи' + error)
+            notification.error({
+                title: 'Ошибка удаления задачи',
+            })
         }
     }
 
