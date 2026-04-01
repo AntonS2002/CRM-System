@@ -17,7 +17,7 @@ import {type Profile, Roles, type User} from "../../type";
 import type {ColumnsType} from "antd/es/table";
 import {DeleteOutlined, UserOutlined, SafetyCertificateOutlined, MoreOutlined} from '@ant-design/icons';
 import {blockUser, deleteUser, getUsers, unblockUser, updateRolesUser} from "../../api/apiTableUsers.ts";
-import {useAppDispatch, useAppSelector} from "../../store/hooks.ts";
+import {useAppSelector} from "../../store/hooks.ts";
 import styles from '../../components/TableUsers/TableUsers.module.scss'
 import {useNavigate} from "react-router-dom";
 
@@ -53,12 +53,10 @@ export const TableUsers: React.FC = () => {
 
     const navigate = useNavigate();
 
-    const dispatch = useAppDispatch();
     const auth = useAppSelector(state => state.auth)
     const userRoles = auth.roles
 
     const isAdmin = userRoles.includes(Roles.ADMIN)
-    const isModerator = userRoles.includes(Roles.MODERATOR)
 
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
     const [dataUsers, setDataUsers] = useState<Profile[]>([]);
@@ -264,17 +262,28 @@ export const TableUsers: React.FC = () => {
                         icon: <SafetyCertificateOutlined/>,
                         onClick: () => {handleOpenDrawer(profile)}
                     },
-                    {
+                    isAdmin ? {
                         key: 3,
                         label: profile.isBlocked ? 'Разблокировать' : 'Заблокировать',
                         icon: <UserOutlined/>,
-                        onClick: () => {updateUserStatus(profile.id, profile.isBlocked ? 'unblock' : 'block')}
+                        onClick: () => {
+                            Modal.confirm({
+                                title: profile.isBlocked ? 'Разблокировать?' : 'Заблокировать?',
+                                okText: profile.isBlocked ? 'Разблокировать' : 'Заблокировать',
+                                content: `Вы уверены что хотите ${profile.isBlocked ? 'разблокировать' : 'заблокировать'} пользователя: ${profile.username}`,
+                                cancelText: 'Отмена',
+                                onOk: () => {profile.isBlocked ? updateUserStatus(profile.id, 'unblock')
+                                    :
+                                    updateUserStatus(profile.id, 'block')},
 
-                    },
+                            })
+                        }
+
+                    }: null,
                     {
                         type: 'divider'
                     },
-                    {
+                    isAdmin ? {
                         key: 4,
                         danger: true,
                         label: 'Удалить пользователя',
@@ -288,9 +297,7 @@ export const TableUsers: React.FC = () => {
                                 onOk: () => {updateUserStatus(profile.id, 'delete')}
                             })
                         }
-
-
-                    }
+                    } : null
                 ]
                 return (
                     <Dropdown menu={{items}}>
@@ -309,7 +316,7 @@ export const TableUsers: React.FC = () => {
 
     const handleSorterChange: TableProps<User>['onChange'] = (pagination, _, sorter) => {
 
-        const singleSorter = Array.isArray(sorter) ? sorter[0] : sorter
+        const singleSorter = Array.isArray(sorter) ? sorter[1] : sorter
 
         let sortBy : string = 'id'
         let sortOrder: 'asc' | 'desc' | undefined = 'asc'
@@ -396,7 +403,7 @@ export const TableUsers: React.FC = () => {
                     onChange={handleSearchChange}
                     onClear={handleClearSearchChange}
                 />
-            <div className={styles.segment}>
+            {isAdmin ? <div className={styles.segment}>
                 <Segmented
                     options={[
                         {
@@ -415,7 +422,7 @@ export const TableUsers: React.FC = () => {
                     value={filter}
                     onChange={handleFilterChange}
                 />
-            </div>
+            </div>: ''}
 
             <Flex gap="medium" vertical>
                 <Table

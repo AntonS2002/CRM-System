@@ -1,8 +1,8 @@
 import {store} from "../store";
-import {logout, setCredentials} from "../store/slices/authSlice.ts";
+import {logout, setCredentials, setRoles} from "../store/slices/authSlice.ts";
 import {notification} from "antd";
 import {tokenManager} from "./auth.ts";
-import {refreshToken} from "../api/apiAuth.ts";
+import {getProfileUser, refreshToken} from "../api/apiAuth.ts";
 
 
 export const initAuth = async () => {
@@ -15,6 +15,10 @@ export const initAuth = async () => {
         localStorage.setItem('refreshToken', data.refreshToken)
 
         store.dispatch(setCredentials())
+
+        const user = await getProfileUser();
+
+        store.dispatch(setRoles(user.roles));
 
         return null
     } catch (error) {

@@ -4,7 +4,6 @@ import type {Roles} from "../../type";
 
 
 export interface AuthState {
-    includes(arg0: string): unknown;
     isAuth: boolean;
     roles: Roles[];
 }
