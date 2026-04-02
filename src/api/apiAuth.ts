@@ -1,6 +1,5 @@
-import type {AuthData, Profile, Token, UserRegistration} from "../type";
+import type {AuthData, Profile, Token, User, UserRegistration} from "../type";
 import {tokenManager} from "../util/auth.ts";
-
 import {store} from "../store";
 import {logout} from "../store/slices/authSlice.ts";
 import {axiosInstance} from "./apiInstance.ts";
@@ -59,7 +58,8 @@ export async function refreshToken(refreshTokenValue: string | null)  {
     return response.data;
 }
 
-export async function getUserProfile() {
-    const response = await axiosInstance.get<Profile>('/user/profile');
+export async function getProfileUser() {
+    const response = await axiosInstance.get<User>('/user/profile');
     return response.data;
 }
+

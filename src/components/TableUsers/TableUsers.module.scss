@@ -1,0 +1,20 @@
+.container{
+  display: flex;
+  gap: 2rem;
+}
+
+.button{
+  display: flex;
+  justify-content: left;
+  gap: 1rem;
+}
+
+.page{
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.segment{
+  margin: 1rem;
+}

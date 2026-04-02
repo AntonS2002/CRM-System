@@ -19,7 +19,8 @@ export const ProfilePage = () => {
 
         const loadProfile = async () => {
             try {
-                const response = await getUserProfile();
+                const response = await getProfileUser();
+
                 setProfileData([
                     {
                         username: response.username,

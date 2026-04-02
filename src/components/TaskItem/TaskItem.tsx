@@ -38,7 +38,7 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
             await editTodo(editingId, updateTodo)
 
             notification.success({
-                message: 'Успешно',
+                title: 'Успешно',
                 description: 'Задача обновлена!',
             })
 
@@ -48,7 +48,7 @@ export const TaskItem = ({ todo, fetchTodos, setIsEditing}: TodoItemProps) => {
         } catch (error) {
 
             notification.error({
-                message: 'Ошибка',
+                title: 'Ошибка',
                 description: 'Не удалось сохранить задачу',
             })
 

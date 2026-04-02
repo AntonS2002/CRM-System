@@ -1,13 +1,21 @@
 import type {
-    Filter,
-    MetaResponse,
+    FilterType,
     Todo,
     TodoInfo,
     TodoRequest,
 } from "../type";
 import {axiosInstance} from "./apiInstance.ts";
 
-export async function getTodos(status: Filter) {
+
+export interface MetaResponse<T, N> {
+    data: T[]
+    info?: N
+    meta: {
+        totalAmount: number
+    }
+}
+
+export async function getTodo(status: FilterType) {
     const response = await axiosInstance.get<MetaResponse<Todo, TodoInfo>>('/todos',{
         params: {
             filter: status

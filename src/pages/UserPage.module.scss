@@ -1,0 +1,24 @@
+.container{
+  border-radius: 2rem;
+  background-color: #ffffff;
+  margin: 3rem;
+}
+
+.ul{
+  padding: 3rem;
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+  font-size: xx-large;
+  list-style: none;
+}
+
+.button{
+  display: flex;
+  gap: 1rem;
+  padding: 3rem;
+}
+
+h1{
+  margin: 1rem;
+}
