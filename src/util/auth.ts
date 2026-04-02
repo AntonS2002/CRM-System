@@ -11,7 +11,7 @@ class createManagerToken {
         return this.token;
     }
 
-    public clearToken() {
+    public clearToken(): void {
         this.token = null;
     }
 }
