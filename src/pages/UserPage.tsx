@@ -7,6 +7,7 @@ import {ArrowLeftOutlined, EditOutlined} from "@ant-design/icons";
 import styles from "../../src/pages/UserPage.module.scss"
 import {emailTextAuthRules, phoneTextAuthRules, usernameTextAuthRules} from "../components/Validation/FormAuthRules.ts";
 
+
 type TableUser = Pick<User, 'username' | 'email' | 'phoneNumber'>
 
 export const UserPage = () => {
@@ -100,6 +101,14 @@ export const UserPage = () => {
         }
     ] : []
 
+    type DataSourceItem = {
+        key: number;
+        field: string;
+        value: string;
+        dataIndex: string;
+        rules: any[];
+    }
+
     const columns = [
         {
             title: 'Данные пользователя',
@@ -111,7 +120,7 @@ export const UserPage = () => {
             title: 'Значение',
             dataIndex: 'value',
             key: 'value',
-            render: (text: string, record) => {
+            render: (text: string, record: DataSourceItem) => {
                 if(isEditing) {
                     return (
                         <Form.Item
