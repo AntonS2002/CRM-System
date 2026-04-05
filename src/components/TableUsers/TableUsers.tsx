@@ -11,7 +11,7 @@ import {
     Drawer,
     Select,
     Input,
-    Typography, type TableProps, Segmented
+    Typography, type TableProps
 } from 'antd';
 import {type Profile, Roles, type User} from "../../type";
 import type {ColumnsType} from "antd/es/table";
@@ -157,8 +157,17 @@ export const TableUsers: React.FC = () => {
             return
         }
 
+      let roleToSave = selectedRoles
+        if(!selectedRoles || selectedRoles.length === 0) {
+            roleToSave = [Roles.USER]
+            notification.info({
+                title: 'Роли не выбраны',
+                description: 'Назначен USER по умолчанию'
+            })
+        }
+
         try {
-            await updateRolesUser(selectedUserId, selectedRoles)
+            await updateRolesUser(selectedUserId, roleToSave)
             notification.success({
                 title: 'Роли обновлены',
                 description: 'Роли пользователя успешно обновлены'
@@ -404,7 +413,8 @@ export const TableUsers: React.FC = () => {
                     onClear={handleClearSearchChange}
                 />
             {isAdmin ? <div className={styles.segment}>
-                <Segmented
+                <Select
+                    style={{ width: '140px' }}
                     options={[
                         {
                             label: 'Все',

@@ -1,11 +1,11 @@
-import {Button, Form, Input, notification, Space, Table} from "antd";
+import {Button, Form, Input, notification, Space} from "antd";
 import {useEffect, useState} from "react";
 import type {User} from "../type";
 import {getUser, updateProfileUser} from "../api/apiTableUsers.ts";
 import {useNavigate, useParams} from "react-router-dom";
 import {ArrowLeftOutlined, EditOutlined} from "@ant-design/icons";
 import styles from "../../src/pages/UserPage.module.scss"
-import {emailTextAuthRules, phoneTextAuthRules, usernameTextAuthRules} from "../components/Validation/FormAuthRules.ts";
+
 
 
 type TableUser = Pick<User, 'username' | 'email' | 'phoneNumber'>
@@ -19,6 +19,12 @@ export const UserPage = () => {
     const [dataUser, setDataUser] = useState<TableUser | null>(null)
 
     const [isEditing, setIsEditing] = useState<boolean>(false)
+
+    const [profile, setProfile] = useState({
+        username: dataUser?.username,
+        email: dataUser?.email,
+        phoneNumber: dataUser?.phoneNumber,
+    })
 
     const [form] = Form.useForm()
 
@@ -77,65 +83,7 @@ export const UserPage = () => {
         form.resetFields()
     }
 
-    const dataSource = dataUser ? [
-        {
-            key: 1,
-            field: "Имя пользователя:",
-            value: dataUser.username,
-            dataIndex: 'username',
-            rules: usernameTextAuthRules
-        },
-        {
-            key: 2,
-            field: "Email:",
-            value: dataUser.email,
-            dataIndex: 'email',
-            rules: emailTextAuthRules
-        },
-        {
-            key: 3,
-            field: "Телефон:",
-            value: dataUser.phoneNumber,
-            dataIndex: 'phoneNumber',
-            rules: phoneTextAuthRules
-        }
-    ] : []
 
-    type DataSourceItem = {
-        key: number;
-        field: string;
-        value: string;
-        dataIndex: string;
-        rules: any[];
-    }
-
-    const columns = [
-        {
-            title: 'Данные пользователя',
-            dataIndex: 'field',
-            key: 'field',
-
-        },
-        {
-            title: 'Значение',
-            dataIndex: 'value',
-            key: 'value',
-            render: (text: string, record: DataSourceItem) => {
-                if(isEditing) {
-                    return (
-                        <Form.Item
-                            name={record.dataIndex}
-                            rules={record.rules}
-                            style={{margin: 0}}
-                        >
-                        <Input/>
-                        </Form.Item>
-                    )
-                }
-                return text
-            }
-        }
-    ]
 
     const loadDataUser = async () => {
 
@@ -169,18 +117,37 @@ export const UserPage = () => {
        loadDataUser()
     }, [id])
 
+    const dataProfile = [
+        {label: 'Имя пользователя', value: dataUser?.username},
+        {label: 'Email', value: dataUser?.email},
+        {label: 'Телефон', value: dataUser?.phoneNumber},
+    ]
+
+    const handleChangeValue = (field: string, value: string) => {
+        setProfile(prev => ({
+            ...prev,
+            [field]: value
+    }))
+    }
+
     return(
         <div className={styles.container}>
-
             <Form form={form}>
-                <Table
-                    dataSource={dataSource}
-                    columns={columns}
-                    pagination={false}
-                    bordered
-                />
-            </Form>
+                <ul>
+                    {dataProfile.map((profile, index) =>
+                        <li
+                            key={index}>{profile.label}: {isEditing
+                            ?
+                            <Input
+                                value={profile.value}
+                                onChange={(e) => handleChangeValue('username', e.target.value)}
+                            /> : profile.value}
+                        </li>
+                    )}
 
+                    <li>{profile.username}</li>
+                </ul>
+            </Form>
             <Space>
                 <Button icon={<ArrowLeftOutlined/>} variant={'outlined'} color={'purple'} onClick={() => navigate('/app/users/')}>Вернуться</Button>
                 {!isEditing ? (
@@ -195,6 +162,10 @@ export const UserPage = () => {
                 )}
 
             </Space>
+
+
+
+
 
 
         </div>
