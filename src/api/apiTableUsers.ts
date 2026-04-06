@@ -41,6 +41,6 @@ export async function updateRolesUser(id: number, roles: Roles[]) {
 }
 
 export async function updateProfileUser(id: number, profile: UserRequest)  {
-    const  response = await axiosInstance.put<User>(`/admin/users/${id}`, profile);
-    return response.data;
+   const  response = await axiosInstance.put<User>(`/admin/users/${id}`, profile);
+   return response.data;
 }
