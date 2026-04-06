@@ -70,13 +70,32 @@ export const UserPage = () => {
     const handleSaveEdit = async () => {
         try {
             const values =  await form.validateFields();
-            const response = await updateProfileUser(Number(id), values)
+
+            const changedData: Partial<UserType> = {}
+
+            if(values.username !== dataUser.username){
+                changedData.username = values.username
+            }
+            if(values.email !== dataUser.email){
+                changedData.email = values.email
+            }
+            if(values.phoneNumber !== dataUser.phoneNumber){
+                changedData.phoneNumber = values.phoneNumber
+            }
+            if(Object.keys(changedData).length === 0){
+
+                notification.info({
+                    title: "Нет изменений",
+                })
+                setIsEdit(false);
+                return
+            }
+
+           await updateProfileUser(Number(id), changedData)
 
             setDataUser(prev => ({
                 ...prev,
-                username: response.username,
-                email: response.email,
-                phoneNumber: response.phoneNumber,}))
+                ...changedData}))
 
             notification.success({
                 title: "Успех",
