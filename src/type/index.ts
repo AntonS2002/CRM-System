@@ -48,15 +48,15 @@ export interface ProfileRequest {
     phoneNumber: string;
 }
 
-export interface Profile {
-    id: number;
-    username: string;
-    email: string;
-    date: string;
-    isBlocked: boolean;
-    roles: Roles[];
-    phoneNumber: string;
-}
+// export interface Profile {
+//     id: number;
+//     username: string;
+//     email: string;
+//     date: string;
+//     isBlocked: boolean;
+//     roles: Roles[];
+//     phoneNumber: string;
+// }
 
 
 // Интерфейс запроса для фильтрации и сортировки пользователей
@@ -107,6 +107,7 @@ export const Roles = {
 
 export type Roles = 'ADMIN' | 'MODERATOR' | 'USER';
 
+export type TableUser = Pick<User, 'username' | 'email' | 'date' | 'isBlocked' | 'roles' | 'phoneNumber' | 'id' >
 
 
 

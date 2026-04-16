@@ -1,8 +1,9 @@
 import {Button, Form, Input, notification, Space} from "antd";
 import {useEffect, useState} from "react";
-import type {User} from "../type";
+
 import {getUser, updateProfileUser} from "../api/apiTableUsers.ts";
 import {useNavigate, useParams} from "react-router-dom";
+import type {User} from "../type";
 
 
 
@@ -16,11 +17,7 @@ export const UserPage = () => {
 
     const [form] = Form.useForm();
 
-    const [dataUser, setDataUser] = useState<UserType>({
-        username: "",
-        email: "",
-        phoneNumber: "",
-    })
+    const [dataUser, setDataUser] = useState<Partial<UserType>>({})
 
     const [isEdit, setIsEdit] = useState<boolean>(false);
 
@@ -67,10 +64,8 @@ export const UserPage = () => {
         setIsEdit(false);
     }
 
-    const handleSaveEdit = async () => {
+    const handleSaveEdit = async (values: UserType) => {
         try {
-            const values =  await form.validateFields();
-
             const changedData: Partial<UserType> = {}
 
             if(values.username !== dataUser.username){
