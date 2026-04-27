@@ -1,4 +1,4 @@
-import type {AuthData, Profile, Token, User, UserRegistration} from "../type";
+import type {AuthData, Token, User, UserRegistration} from "../type";
 import {tokenManager} from "../util/auth.ts";
 import {store} from "../store";
 import {logout} from "../store/slices/authSlice.ts";
@@ -37,7 +37,7 @@ axiosInstance.interceptors.response.use(
 )
 
 export async function registerNewUser(user: UserRegistration){
-    const response = await axiosInstance.post<Profile>('/auth/signup', user)
+    const response = await axiosInstance.post<User>('/auth/signup', user)
     return response.data;
 }
 

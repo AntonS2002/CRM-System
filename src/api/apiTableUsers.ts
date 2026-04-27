@@ -1,8 +1,8 @@
 import {axiosInstance} from "./apiInstance.ts";
-import {type MetaResponse, type Profile, Roles, type User, type UserFilters, type UserRequest} from "../type";
+import {type MetaResponse, Roles, type User, type UserFilters, type UserRequest} from "../type";
 
 export async function getUsers({search, page, sortBy, sortOrder, limit, isBlocked}: UserFilters) {
-    const response = await axiosInstance.get<MetaResponse<Profile>>('/admin/users', {
+    const response = await axiosInstance.get<MetaResponse<User>>('/admin/users', {
         params: {
             search: search,
             sortBy: sortBy,
@@ -16,7 +16,7 @@ export async function getUsers({search, page, sortBy, sortOrder, limit, isBlocke
 }
 
 export async function getUser(id: number) {
-    const response = await axiosInstance.get<Profile>(`/admin/users/${id}`);
+    const response = await axiosInstance.get<User>(`/admin/users/${id}`);
     return response.data;
 }
 
@@ -41,6 +41,6 @@ export async function updateRolesUser(id: number, roles: Roles[]) {
 }
 
 export async function updateProfileUser(id: number, profile: UserRequest)  {
-    const  response = await axiosInstance.put<User>(`/admin/users/${id}`, profile);
-    return response.data;
+   const  response = await axiosInstance.put<User>(`/admin/users/${id}`, profile);
+   return response.data;
 }

@@ -11,9 +11,9 @@ import {
     Drawer,
     Select,
     Input,
-    Typography, type TableProps, Segmented
+    Typography, type TableProps
 } from 'antd';
-import {type Profile, Roles, type User} from "../../type";
+import {Roles, type TableUser, type User} from "../../type";
 import type {ColumnsType} from "antd/es/table";
 import {DeleteOutlined, UserOutlined, SafetyCertificateOutlined, MoreOutlined} from '@ant-design/icons';
 import {blockUser, deleteUser, getUsers, unblockUser, updateRolesUser} from "../../api/apiTableUsers.ts";
@@ -21,7 +21,7 @@ import {useAppSelector} from "../../store/hooks.ts";
 import styles from '../../components/TableUsers/TableUsers.module.scss'
 import {useNavigate} from "react-router-dom";
 
-type TableUser = Pick<User, 'username' | 'email' | 'date' | 'isBlocked' | 'roles' | 'phoneNumber' | 'id' >
+
 
 interface TableParams {
     sortBy: string | undefined,
@@ -59,7 +59,7 @@ export const TableUsers: React.FC = () => {
     const isAdmin = userRoles.includes(Roles.ADMIN)
 
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-    const [dataUsers, setDataUsers] = useState<Profile[]>([]);
+    const [dataUsers, setDataUsers] = useState<User[]>([]);
 
     const [tableParams, setTableParams] = useState<TableParams>({
         sortBy: 'id',
@@ -74,15 +74,25 @@ export const TableUsers: React.FC = () => {
     const [total, setTotal] = useState<number>(0)
     const debouncedSearch = useDebounce(searchValue, 500)
 
-    const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+    const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
     const [selectedRoles, setSelectedRoles] = useState<Roles[]>([]);
 
     const loadDataUsers = async () => {
 
         const {sortBy, sortOrder, isBlocked, search, limit, page} = tableParams
+
+        const params: Partial<TableParams> = {}
+
+        if(sortBy) params.sortBy = sortBy
+        if(sortOrder) params.sortOrder = sortOrder
+        if(isBlocked) params.isBlocked = isBlocked
+        if(search) params.search = search
+        if(limit) params.limit = limit
+        if(page) params.page = page
+
         try {
-            const response = await getUsers({sortBy, sortOrder, isBlocked, search, limit, page});
+            const response = await getUsers(params);
             setDataUsers(response.data)
             setTotal(response.meta.totalAmount)
         } catch (error) {
@@ -136,15 +146,15 @@ export const TableUsers: React.FC = () => {
         }
     }
 
-    const handleOpenDrawer = (user: TableUser) => {
+    const handleShowUserActions = (user: TableUser) => {
         setSelectedUserId(user.id)
-        setDrawerOpen(true)
+        setIsDrawerOpen(true)
         setSelectedRoles(user.roles)
     }
 
-    const handleCloseDrawer = () => {
+    const handleCloseUserActions = () => {
         setSelectedUserId(null)
-        setDrawerOpen(false)
+        setIsDrawerOpen(false)
         setSelectedRoles([])
     }
 
@@ -157,14 +167,23 @@ export const TableUsers: React.FC = () => {
             return
         }
 
+      let roleToSave = selectedRoles
+        if(!selectedRoles || selectedRoles.length === 0) {
+            roleToSave = [Roles.USER]
+            notification.info({
+                title: 'Роли не выбраны',
+                description: 'Назначен USER по умолчанию'
+            })
+        }
+
         try {
-            await updateRolesUser(selectedUserId, selectedRoles)
+            await updateRolesUser(selectedUserId, roleToSave)
             notification.success({
                 title: 'Роли обновлены',
                 description: 'Роли пользователя успешно обновлены'
             })
             await loadDataUsers()
-            handleCloseDrawer()
+            handleCloseUserActions()
 
         } catch (error) {
             notification.error({
@@ -260,7 +279,7 @@ export const TableUsers: React.FC = () => {
                         key: 2,
                         label: 'Управление ролями',
                         icon: <SafetyCertificateOutlined/>,
-                        onClick: () => {handleOpenDrawer(profile)}
+                        onClick: () => {handleShowUserActions(profile)}
                     },
                     isAdmin ? {
                         key: 3,
@@ -367,8 +386,6 @@ export const TableUsers: React.FC = () => {
                 break
         }
 
-        console.log(isBlocked)
-
         setTableParams(prev => ({
             ...prev,
             isBlocked: isBlocked,
@@ -404,7 +421,8 @@ export const TableUsers: React.FC = () => {
                     onClear={handleClearSearchChange}
                 />
             {isAdmin ? <div className={styles.segment}>
-                <Segmented
+                <Select
+                    style={{ width: '140px' }}
                     options={[
                         {
                             label: 'Все',
@@ -444,14 +462,14 @@ export const TableUsers: React.FC = () => {
                 title='Управленеи ролями пользователя'
                 placement="right"
                 size='large'
-                onClose={handleCloseDrawer}
-                open={drawerOpen}
+                onClose={handleCloseUserActions}
+                open={isDrawerOpen}
                 footer={
                     <div className={styles.button}>
                         <Button type="primary" onClick={handleSaveRoles}>
                             Сохранить
                         </Button>
-                        <Button onClick={handleCloseDrawer}>Cancel</Button>
+                        <Button onClick={handleCloseUserActions}>Cancel</Button>
                     </div>
                 }
             >

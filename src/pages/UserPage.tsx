@@ -1,193 +1,137 @@
-import {Button, Form, Input, notification, Space, Table} from "antd";
+import {Button, Form, Input, notification, Space} from "antd";
 import {useEffect, useState} from "react";
-import type {User} from "../type";
+
 import {getUser, updateProfileUser} from "../api/apiTableUsers.ts";
 import {useNavigate, useParams} from "react-router-dom";
-import {ArrowLeftOutlined, EditOutlined} from "@ant-design/icons";
-import styles from "../../src/pages/UserPage.module.scss"
-import {emailTextAuthRules, phoneTextAuthRules, usernameTextAuthRules} from "../components/Validation/FormAuthRules.ts";
+import type {User} from "../type";
 
-type TableUser = Pick<User, 'username' | 'email' | 'phoneNumber'>
+
 
 export const UserPage = () => {
 
+    type UserType = Pick<User, 'username' | 'email' | 'phoneNumber'>
+
     const navigate = useNavigate();
 
-    const {id} = useParams<{id: string}>()
+    const {id} = useParams();
 
-    const [dataUser, setDataUser] = useState<TableUser | null>(null)
+    const [form] = Form.useForm();
 
-    const [isEditing, setIsEditing] = useState<boolean>(false)
+    const [dataUser, setDataUser] = useState<Partial<UserType>>({})
 
-    const [form] = Form.useForm()
-
-    const handleStartEdit = () => {
-        //заполняем форму текущими данными
-        if(dataUser) {
-            form.setFieldsValue({
-                username: dataUser.username,
-                email: dataUser.email,
-                phoneNumber: dataUser.phoneNumber,
-            })
-        }
-        setIsEditing(true)
-    }
-
-    const handleSave = async () => {
-
-        try {
-
-            // получаем значения из формы
-            const values = await form.validateFields()
-
-            if(!id) {
-                notification.error({
-                    title: "ID пользователя отсутствует",
-                })
-                return
-            }
-
-            const updateData = {
-                username: values.username,
-                email: values.email,
-                phoneNumber: values.phoneNumber
-            }
-
-            await updateProfileUser(Number(id), updateData)
-
-            setDataUser(updateData)
-
-
-            notification.success({
-                title: "Данные обновлены",
-            })
-
-            setIsEditing(false)
-
-        } catch (error) {
-            notification.error({
-                title: 'Данные пользователя не сохранены',
-            })
-        }
-    }
-
-    const handleCancel = () => {
-        setIsEditing(false)
-        form.resetFields()
-    }
-
-    const dataSource = dataUser ? [
-        {
-            key: 1,
-            field: "Имя пользователя:",
-            value: dataUser.username,
-            dataIndex: 'username',
-            rules: usernameTextAuthRules
-        },
-        {
-            key: 2,
-            field: "Email:",
-            value: dataUser.email,
-            dataIndex: 'email',
-            rules: emailTextAuthRules
-        },
-        {
-            key: 3,
-            field: "Телефон:",
-            value: dataUser.phoneNumber,
-            dataIndex: 'phoneNumber',
-            rules: phoneTextAuthRules
-        }
-    ] : []
-
-    const columns = [
-        {
-            title: 'Данные пользователя',
-            dataIndex: 'field',
-            key: 'field',
-
-        },
-        {
-            title: 'Значение',
-            dataIndex: 'value',
-            key: 'value',
-            render: (text: string, record) => {
-                if(isEditing) {
-                    return (
-                        <Form.Item
-                            name={record.dataIndex}
-                            rules={record.rules}
-                            style={{margin: 0}}
-                        >
-                        <Input/>
-                        </Form.Item>
-                    )
-                }
-                return text
-            }
-        }
-    ]
+    const [isEdit, setIsEdit] = useState<boolean>(false);
 
     const loadDataUser = async () => {
-
-        if(!id){
-            notification.error({
-                title: 'ID пользователя отсутствует'
-            })
-            return
-        }
-
         try {
-
             const response = await getUser(Number(id))
-
-            const forrmatedData = {
-                id: response.id,
+            setDataUser(response)
+            form.setFieldsValue({
                 username: response.username,
                 email: response.email,
-                phoneNumber: response.phoneNumber
-            }
-            setDataUser(forrmatedData)
+                phoneNumber: response.phoneNumber,
+            })
 
-        } catch (error) {
+
+        } catch (error){
             notification.error({
-                title: 'Ошибка загрузки пользователя',
+                title: "Error",
+                description: "Данные пользователя не загружены",
             })
         }
     }
 
     useEffect(() => {
-       loadDataUser()
-    }, [id])
+        loadDataUser();
+    },[id])
 
-    return(
-        <div className={styles.container}>
+    const handleStartEdit = () => {
+        if(dataUser){
+            form.setFieldsValue({
+                username: dataUser.username,
+                email: dataUser.email,
+                phoneNumber: dataUser.phoneNumber
+            })
+        }
+        setIsEdit(true);
+    }
 
-            <Form form={form}>
-                <Table
-                    dataSource={dataSource}
-                    columns={columns}
-                    pagination={false}
-                    bordered
-                />
+    const handleCancelEdit = () => {
+        form.setFieldsValue({
+            username: dataUser.username,
+            email: dataUser.email,
+            phoneNumber: dataUser.phoneNumber,
+        })
+        setIsEdit(false);
+    }
+
+    const handleSaveEdit = async (values: UserType) => {
+        try {
+            const changedData: Partial<UserType> = {}
+
+            if(values.username !== dataUser.username){
+                changedData.username = values.username
+            }
+            if(values.email !== dataUser.email){
+                changedData.email = values.email
+            }
+            if(values.phoneNumber !== dataUser.phoneNumber){
+                changedData.phoneNumber = values.phoneNumber
+            }
+            if(Object.keys(changedData).length === 0){
+
+                notification.info({
+                    title: "Нет изменений",
+                })
+                setIsEdit(false);
+                return
+            }
+
+           await updateProfileUser(Number(id), changedData)
+
+            setDataUser(prev => ({
+                ...prev,
+                ...changedData}))
+
+            notification.success({
+                title: "Успех",
+                description: "Данные пользователя обновлены",
+            });
+
+            setIsEdit(false);
+
+        } catch (error) {
+            notification.error({
+                title: "Error",
+                description: "Данные не обновлены",
+            })
+        }
+    }
+
+    return (
+        <div>
+            <Form form={form} onFinish={handleSaveEdit}>
+                <Form.Item name='username'>
+                    <Input disabled={!isEdit}/>
+                </Form.Item>
+
+                <Form.Item name='email'>
+                    <Input disabled={!isEdit}/>
+                </Form.Item>
+
+                <Form.Item name='phoneNumber'>
+                    <Input disabled={!isEdit}/>
+                </Form.Item>
+                <Space>
+                        <Button onClick={() => navigate('/app/users')}>Вернуться</Button>
+                    {isEdit ? (
+                        <div style={{display:'flex' , gap: '0.5rem'}}>
+                            <Button type={'primary'} htmlType={'submit'}>Сохранить</Button>
+                            <Button danger={true} onClick={handleCancelEdit}>Отмена</Button>
+                        </div>
+
+                    ) : (<Button onClick={handleStartEdit}>Редактировать</Button>)}
+                </Space>
             </Form>
-
-            <Space>
-                <Button icon={<ArrowLeftOutlined/>} variant={'outlined'} color={'purple'} onClick={() => navigate('/app/users/')}>Вернуться</Button>
-                {!isEditing ? (
-                    <Button icon={<EditOutlined />} variant={'outlined'} color={'pink'} onClick={handleStartEdit}>Редактировать</Button>
-
-                ) : (
-                    <>
-                        <Button variant={'solid'} color={'green'} onClick={handleSave}>Сохранить</Button>
-                        <Button variant={'solid'} color={'danger'} onClick={handleCancel}>Отмена</Button>
-                    </>
-
-                )}
-
-            </Space>
-
-
         </div>
     )
 }

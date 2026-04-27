@@ -48,15 +48,15 @@ export interface ProfileRequest {
     phoneNumber: string;
 }
 
-export interface Profile {
-    id: number;
-    username: string;
-    email: string;
-    date: string;
-    isBlocked: boolean;
-    roles: Roles[];
-    phoneNumber: string;
-}
+// export interface Profile {
+//     id: number;
+//     username: string;
+//     email: string;
+//     date: string;
+//     isBlocked: boolean;
+//     roles: Roles[];
+//     phoneNumber: string;
+// }
 
 
 // Интерфейс запроса для фильтрации и сортировки пользователей
@@ -80,12 +80,6 @@ export interface User {
     phoneNumber: string;
 }
 
-// Интерфейс для обновления прав пользователя
-interface UserRolesRequest {
-    roles: Roles []  // при вызове этой апи роли будут обновлены к тому массиву который будет передан
-// например если у вас была roles: ['ADMIN'] а вы хотите добавить ['MODERATOR'] то нужно передавать
-// старые + новые - roles: ['ADMIN', 'MODERATOR']
-}
 
 // Интерфейс для обновления данных пользователя
 export interface UserRequest{
@@ -105,13 +99,15 @@ export interface MetaResponse<T> {
     }
 }
 
-export enum Roles {
-    ADMIN = "ADMIN",
-    MODERATOR = "MODERATOR",
-    USER = "USER"
-}
+export const Roles = {
+        ADMIN: "ADMIN",
+        MODERATOR: "MODERATOR",
+        USER: "USER"
+} as const;
 
+export type Roles = 'ADMIN' | 'MODERATOR' | 'USER';
 
+export type TableUser = Pick<User, 'username' | 'email' | 'date' | 'isBlocked' | 'roles' | 'phoneNumber' | 'id' >
 
 
 
