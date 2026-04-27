@@ -4,7 +4,7 @@ import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import type {ProfileRequest} from "../type";
-import {getUserProfile, logoutProfile} from "../api/apiAuth.ts";
+import {getProfileUser, logoutProfile} from "../api/apiAuth.ts";
 import {logout} from "../store/slices/authSlice.ts";
 import {tokenManager} from "../util/auth.ts";
 import {Button, notification, Typography} from "antd";
