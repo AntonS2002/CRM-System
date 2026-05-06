@@ -53,7 +53,18 @@ export const Navigation = () => {
                     Пользователи
                 </NavLink>
             )
-        }] : []
+        }] : [],
+        {
+            key: '/app/KPI_dashboard',
+            label: (
+                <NavLink
+                    to={"/app/KPI_dashboard"}
+                    className={({isActive}) => (isActive ? 'active' : undefined)}
+                >
+                    KPI
+                </NavLink>
+            )
+        }
     ]
 
     return <Menu

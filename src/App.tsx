@@ -14,6 +14,7 @@ import {initAuth} from "./util/initAuth.ts";
 import {ProtectedRoute} from "./components/ProtectedRoute.tsx";
 import {UsersPage} from "./pages/UsersPage.tsx";
 import {UserPage} from "./pages/UserPage.tsx";
+import {DashboardKPIpage} from "./pages/DashboardKPIpage.tsx";
 
 const router = createBrowserRouter([
             {path: "/", element: <Navigate to="/auth/login" replace />},
@@ -43,7 +44,8 @@ const router = createBrowserRouter([
                         children: [
                             {index: true, element: <UsersPage/>},
                             {path: ':id', element: <UserPage/>}
-                        ]}
+                        ]},
+                    {path: 'KPI_dashboard', element: <DashboardKPIpage/>},
                 ]
             },
             {path: "/logout", action: logout}

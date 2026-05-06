@@ -8,9 +8,6 @@ import {Content} from "antd/es/layout/layout";
 
 
 export const MainLayout = () => {
-
-
-
     return (
         <Layout className={styles.rootLayout}>
             <Sider

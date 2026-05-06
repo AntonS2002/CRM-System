@@ -20,6 +20,10 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config
 
+        if(originalRequest.url?.includes('/refresh')) {
+            return Promise.reject(error);// Не пытаемся рефрешить сам рефреш
+        }
+
         if(error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
