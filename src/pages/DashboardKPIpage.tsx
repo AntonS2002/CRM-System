@@ -1,7 +1,8 @@
 import {Breadcrumb, Card, Col, Radio, type RadioChangeEvent, Row, Select, Space, Statistic, type TabsProps} from "antd";
 import {useState} from "react";
 import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
-
+import {TableKpi} from "../components/TableKpi/TableKpi.tsx";
+import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 export const DashboardKPIpage = () => {
     const [tabPlacement, setTabPlacement] = useState<TabsProps['tabPlacement']>('top');
 
@@ -14,11 +15,11 @@ export const DashboardKPIpage = () => {
         {name: 'WQE', age: 31},
         {name: 'dsgrs', age: 22},
         {name: 'Fyjyjr5', age: 44},
-        {name: 'FXAWED', age: 35},
-        {name: 'FXAWED', age: 35},
-        {name: 'FXAWED', age: 35},
-        {name: 'FXAWED', age: 35},
-        {name: 'FXAWED', age: 35},
+        {name: 'FXAWED1', age: 31},
+        {name: 'FXAWED2', age: 32},
+        {name: 'FXAWED3', age: 35},
+        {name: 'FXAWED4', age: 66},
+        {name: 'FXAWED5', age: 75},
     ]
 
     return (
@@ -69,6 +70,32 @@ export const DashboardKPIpage = () => {
             <div style={{margin: '1rem', display: 'flex', justifyContent: 'center', gap: '7rem'}}>
                 <div style={{width: '800px', height: '400px'}}>
                     <Card title="Карточка KPI" variant="borderless" style={{ width: '100%', height: '100%' }}>
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Card variant="borderless">
+                                    <Statistic
+                                        title="Active"
+                                        value={11.28}
+                                        precision={2}
+                                        styles={{ content: { color: '#3f8600' } }}
+                                        prefix={<ArrowUpOutlined />}
+                                        suffix="%"
+                                    />
+                                </Card>
+                            </Col>
+                            <Col span={12}>
+                                <Card variant="borderless">
+                                    <Statistic
+                                        title="Idle"
+                                        value={9.3}
+                                        precision={2}
+                                        styles={{ content: { color: '#cf1322' } }}
+                                        prefix={<ArrowDownOutlined />}
+                                        suffix="%"
+                                    />
+                                </Card>
+                            </Col>
+                        </Row>
                         <Row>
                             <Col span={12}>
                                 <Statistic title="OEE:" value={112893} />
@@ -82,7 +109,7 @@ export const DashboardKPIpage = () => {
                         </Row>
                     </Card>
                 </div>
-                <div style={{width:'800px', height: '400px'}}>
+                <div style={{width:'800px', height: '400px', backgroundColor:'#fff', borderRadius: '10px'}}>
                     <ResponsiveContainer width="100%" height='100%'>
                         <LineChart data={data}>
                             <CartesianGrid strokeDasharray="3 3" />
@@ -93,6 +120,9 @@ export const DashboardKPIpage = () => {
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
+            </div>
+            <div>
+                <TableKpi/>
             </div>
 
         </div>

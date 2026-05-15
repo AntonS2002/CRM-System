@@ -1,0 +1,29 @@
+.main1 {
+  display: grid;
+  justify-content: center;
+
+}
+
+.table1 {
+  border-collapse: collapse;
+  width: 1700px;
+  font-size: 30px;
+}
+
+.thead1 {
+  background-color: lightgray;
+}
+
+.th1 {
+  background-color: #026ba3;
+  color: white;
+}
+
+.tr1, .td1 {
+  border: 1px solid gray;
+  padding: 5px;
+}
+
+.tr1:hover {
+  background-color: lightgray;
+}
